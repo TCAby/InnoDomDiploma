@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+
+    <!-- Necessaries meta-tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap, иконки и шрифт -->
+    <!-- Latest compiled and minified CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker-standalone.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+
+    <link href='http://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900italic,900' rel='stylesheet' type='text/css'>   
+
+    <link rel="stylesheet" type="text/css" href="{% static 'survey/main.css' %}">
+
+    <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
+
+    {% if title %}
+        <title>{{ title }}</title>
+    {% else %}
+        <title></title>
+    {% endif %}
+</head>
+<body>
+    <div class="container-fluid">
+        {% if title %}
+        <h1 style="text-align: center;">Online Surveys system</h1>
+        <h2 style="text-align: center;">{{ title }}</h2>
+        {% else %}
+        {% endif %}
+        <div class="row">
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <button class="btn btn-primary d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#menu" aria-expanded="false" aria-controls="menu">
+                    Menu
+                </button>
+                <ul id="menu" class="list-group collapse show d-md-block">
+                    <li class="list-group-item"><a href="/">Home page</a></li>
+                    <li class="list-group-item"><a href="/surveys">Surveys</a></li>
+                    <li class="list-group-item"><a href="/questions">Questions</a></li>
+                    <li class="list-group-item"><a href="#">Users</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-9 col-md-8 col-sm-6">
+                <main role="main" class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            {% block content %}{% endblock %}
+                        </div>
+                    </div>
+
+                </main>
+            </div>
+        </div>
+    </div>
+    <footer class="text-center bg-dark mt-3">
+        <p>
+            <a href="{% url 'surveys-home' %}">© Vitaly Trakhtenberg, 2023&nbsp;&nbsp;&nbsp;&nbsp;
+                <span class=" translate-middle badge rounded-pill bg-danger">
+                    {{ num_visits }}
+                    <span class="visually-hidden">number of visitors</span>
+                </span>
+            </a>
+        </p>
+    </footer>
+  
+    <!-- Additional JavaScripts -->
+    <!-- At first of all jQuery, than Popper.js, and last in the list Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+  </body>
+  </html>

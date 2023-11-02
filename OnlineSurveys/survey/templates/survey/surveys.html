@@ -1,0 +1,28 @@
+{% extends "survey/base.html" %}
+{% block content %}
+    <div class="mb-4" style="text-align: end;"><a type="button" class="btn btn-outline-primary" href="/add-survey">Add new survey</a></div>
+    <div class="row">
+    {% for survey in surveys %}
+        <div class="col-sm-6 mb-3 mb-sm-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ survey.title }}</h5>
+                    <h6 class="card-subtitle mb-2 text-body-secondary">{{ survey.activity_status }}</h6>
+                    <div class="card-text">
+                        <p>Start from: {{ survey.date_from }}</p>
+                        <p>Finish at: {{ survey.date_upto }}</p>
+                    </div>
+                    <a href="#" class="card-link">View statistic</a>
+                    <a href="/edit-survey/{{ survey.id }}" class="card-link">Edit survey</a>
+                    <a href="/remove-survey/{{ survey.id }}" class="card-link">Remove survey</a>
+                </div>
+                <div class="card-footer">
+                    <div class="d-grid gap-2">
+                        <a href="#" class="btn btn-success" type="button">Start survey</a>
+                    </div>                    
+                </div>
+            </div>
+        </div>        
+    {% endfor %}
+    </div>
+{% endblock content %}

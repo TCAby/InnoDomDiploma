@@ -1,0 +1,22 @@
+{% extends "survey/base.html" %}
+{% block content %}
+    <div class="mb-4" style="text-align: end;"><a type="button" class="btn btn-outline-primary" href="/add-question">Add new question</a></div>
+    <div class="row">
+    {% for question in questions %}
+        <div class="col-sm-6 mb-3 mb-sm-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ question.question_text }}</h5>
+                    <div class="card-text">
+                        <p class="text-body-secondary">{{ question.questionare_id }}</p>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="/edit-question/{{ question.id }}" class="card-link">Edit question</a>
+                    <a href="/remove-question/{{ question.id }}" class="card-link">Remove question</a>
+                </div>
+            </div>
+        </div>        
+    {% endfor %}
+    </div>
+{% endblock content %}

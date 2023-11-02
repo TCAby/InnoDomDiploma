@@ -1,0 +1,99 @@
+{% extends "survey/base.html" %}
+{% block content %}
+    <!-- template of the table row -->
+    <script type="text/template" id="row-template">
+      <tr class="table-row">
+          <td class="row-number"></td>
+        <td>
+          <input type="text" name="answer[]" class="form-control" required>
+        </td>
+        <td>
+            <input type="hidden" name="is_correct_answer[]" value="off">
+            <input class="form-check-input" type="checkbox" name="is_correct_answer[]" value="on">
+        </td>
+        <td>
+          <button type="button" class="btn btn-danger delete-row">Remove the answer</button>
+        </td>
+      </tr>
+    </script>
+
+    <form action="" method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="id_question" class="form-label">Question<i class="bi bi-asterisk"></i></label>
+            <input type="text" class="form-control" value="{{ form.initial.question }}" name="question" id="id_question" aria-describedby="inputQuestionTextHelp" required>
+            <div id="inputQuestionTextHelp" class="form-text">This is necessary field.</div>
+        </div>
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" name="is_allow_multiple_answers" id="id_is_allow_multiple_answers">
+            <label class="form-check-label" for="id_is_allow_multiple_answers">
+              Is multiple answers allowed?
+            </label>
+        </div>
+
+        <!-- answer's table -->
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Answer #</th>
+                        <th>Text</th>
+                        <th>Is correct?</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- not less than one answer is necessary -->
+                    <tr data-id="1">
+                        <td class="row-number" data-id="1">1</td>
+                        <td>
+                            <input type="text" name="answer[]" class="form-control" required>
+                        </td>
+                        <td>
+                            <input type="hidden" name="is_correct_answer[]" value="off">
+                            <input class="form-check-input" type="checkbox" name="is_correct_answer[]" value="on">
+                        </td>
+                            <td>
+                                <button type="button" class="btn btn-outline-danger delete-row" disabled>Remove the answer</button>
+                            </td>
+                    </tr>
+                    <!-- table rows will be added here -->
+                </tbody>
+            </table>
+        </div>
+        <div class="mb-4" style="text-align: center;"><button type="button" class="btn btn-outline-secondary" id="add-row">Add answer</button></div>
+
+        <button type="submit" class="btn btn-primary mb-4">Send question</button>
+    </form>
+
+<!-- подключаем библиотеку jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<!-- скрипт для добавления и удаления строк таблицы -->
+<script>
+    var counter = 1
+  $(function() {
+    // обработчик клика на кнопку "Добавить строку"
+    $('#add-row').click(function() {
+      // клонируем шаблон строки таблицы
+      var $template = $('#row-template').html();
+      var $row = $($template);
+      $row.find('.row-number').text(counter);
+      $row.attr('data-id', counter);
+      $('#table-body').append($row);
+      counter++;
+    });
+
+    $('#table-body').on('change', 'input[type="checkbox"]', function() {
+      var isChecked = $(this).is(':checked');
+      var rowId = $(this).closest('tr').data('id');
+      console.log('Строка с id=' + rowId + ' изменила состояние на ' + isChecked);
+    });
+
+    // обработчик клика на кнопку "Удалить"
+    $('#table-body').on('click', '.delete-row', function() {
+      $(this).closest('tr').remove();
+    });
+  });
+</script>
+
+{% endblock content %}

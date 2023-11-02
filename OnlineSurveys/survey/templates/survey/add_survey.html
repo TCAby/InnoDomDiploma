@@ -1,0 +1,44 @@
+{% extends "survey/base.html" %}
+{% block content %}
+    <form action="" method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="id_title" class="form-label">Survey Title&nbsp;<i class="bi bi-asterisk"></i></label>
+            <input type="text" class="form-control" value="{{ form.initial.title }}" name="title" id="id_title" aria-describedby="inputSurveyTitleHelp" required>
+            <div id="inputSurveyTitleHelp" class="form-text">This is necessary field. You have to use unique name for the survey.</div>
+        </div>
+        <div class="mb-3">
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="activity_status" id="id_activity_status_a" value="active">
+                <label class="form-check-label" for="id_activity_status_a">Active</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="activity_status" id="id_activity_status_s" value="suspend">
+                <label class="form-check-label" for="id_activity_status_s">Suspended</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="activity_status" id="id_activity_status_d" value="draft" checked>
+                <label class="form-check-label" for="id_activity_status_d">Draft</label>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class='col-sm-6'>
+                <label for="id_date_from" class="form-label">Survey start date</label>
+                <input type="datetime-local" class="form-control" value="{{ form.initial.date_from.year }}-{{ form.initial.date_from.month }}-{% if form.initial.date_from.day < 10 %}0{% endif %}{{ first_zero }}{{ form.initial.date_from.day }}T{{ form.initial.date_from.hour }}:{{ form.initial.date_from.minute }}" name="date_from" id="id_date_from" aria-describedby="inputDateTimepickerFromHelp" required />
+                <div id="inputDateTimepickerFromHelp" class="form-text">Even if status is Active the Survey will be inactived before this date</div>
+            </div>
+            <div class='col-sm-6'>
+                <label for="id_date_upto" class="form-label">Survey end date</label>
+                <input type="datetime-local" class="form-control" name="date_upto" id="id_date_upto" aria-describedby="inputDateTimepickerUptoHelp" required />
+                <div id="inputDateTimepickerUptoHelp" class="form-text">Even if status is Active the Survey will be inactived after this date. Also you can leave the field empty</div>
+            </div>
+        </div>
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" name="is_anonymous_allowed" id="id_is_anonymous_allowed" checked>
+            <label class="form-check-label" for="id_is_anonymous_allowed">
+              Is anonymous users allowed?
+            </label>
+        </div>
+        <button type="submit" class="btn btn-primary mb-4">Add survey</button>
+    </form>
+{% endblock content %}
