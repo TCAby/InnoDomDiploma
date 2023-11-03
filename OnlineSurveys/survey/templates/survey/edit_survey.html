@@ -9,36 +9,47 @@
         </div>
         <div class="mb-3">
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="activity_status" id="id_activity_status_a" value="active">
+                <input class="form-check-input" type="radio" name="activity_status" id="id_activity_status_a" value="active" {% if form.initial.activity_status == 'active' %}checked{% endif %}>
                 <label class="form-check-label" for="id_activity_status_a">Active</label>
             </div>
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="activity_status" id="id_activity_status_s" value="suspend">
+                <input class="form-check-input" type="radio" name="activity_status" id="id_activity_status_s" value="suspend" {% if form.initial.activity_status == 'suspend' %}checked{% endif %}>
                 <label class="form-check-label" for="id_activity_status_s">Suspended</label>
             </div>
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="activity_status" id="id_activity_status_d" value="draft" checked>
+                <input class="form-check-input" type="radio" name="activity_status" id="id_activity_status_d" value="draft"  {% if form.initial.activity_status == 'draft' %}checked{% endif %}>
                 <label class="form-check-label" for="id_activity_status_d">Draft</label>
             </div>
         </div>
         <div class="row mb-3">
-            <div class='col-sm-6'>
-                <label for="id_date_from" class="form-label">Survey start date {{ form.initial.date_from }} {{ form.initial.date_from.year }}-{{ form.initial.date_from.month }}-{% if form.initial.date_from.day < 10 %}0{% endif %}{{ first_zero }}{{ form.initial.date_from.day }}T{{ form.initial.date_from.hour }}:{{ form.initial.date_from.minute }}</label>
-                <input type="datetime-local" class="form-control" value="{{ form.initial.date_from.year }}-{{ form.initial.date_from.month }}-{% if form.initial.date_from.day < 10 %}0{% endif %}{{ first_zero }}{{ form.initial.date_from.day }}T{{ form.initial.date_from.hour }}:{{ form.initial.date_from.minute }}" name="date_from" id="id_date_from" aria-describedby="inputDateTimepickerFromHelp" required />
-                <div id="inputDateTimepickerFromHelp" class="form-text">Even if status is Active the Survey will be inactived before this date</div>
+            <div class='col-sm-6' style="display: flex; flex-direction: row;">
+                <label for="id_date_from_day" class="form-label">From:&nbsp;</label>
+                {{ form.date_from }}
             </div>
-            <div class='col-sm-6'>
-                <label for="id_date_upto" class="form-label">Survey end date</label>
-                <input type="datetime-local" class="form-control" name="date_upto" id="id_date_upto" aria-describedby="inputDateTimepickerUptoHelp" required />
-                <div id="inputDateTimepickerUptoHelp" class="form-text">Even if status is Active the Survey will be inactived after this date. Also you can leave the field empty</div>
+            <div class='col-sm-6' style="display: flex; flex-direction: row;">
+                <label for="id_date_upto_day" class="form-label">To:&nbsp;</label>
+                {{ form.date_upto }}
             </div>
         </div>
         <div class="form-check mb-3">
-            <input class="form-check-input" type="checkbox" name="is_anonymous_allowed" id="id_is_anonymous_allowed" checked>
-            <label class="form-check-label" for="id_is_anonymous_allowed">
+            <input class="form-check-input" type="checkbox" name="is_anonymous" id="id_is_anonymous" {% if form.initial.is_anonymous %}checked{% endif %}>
+            <label class="form-check-label" for="id_is_anonymous">
               Is anonymous users allowed?
             </label>
         </div>
-        <button type="submit" class="btn btn-primary mb-4">Add survey</button>
+        <div class="form-check mb-3" style="display: flex; flex-direction: row;">
+            <div class="me-3 p-3 border">
+                <h4>Add</h4>
+                <p style="font-style: italic;"><strong>Add new</strong> questions to the survey: <br>Check waht you want to add</p>
+                {{ form.new_questions }}
+            </div>
+            <div class="ms-3 p-3 border">
+                <h4>Remove</h4>
+                <p style="font-style: italic;"><strong>Remove existed</strong> questions from the survey: <br>Check questions that you want to remove</p>
+                {{ form.exist_questions }}
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary mb-4">Update the survey</button>
+        <a href="/surveys"><button type="button" class="btn btn-secondary mb-4">Close</button></a>
     </form>
 {% endblock content %}

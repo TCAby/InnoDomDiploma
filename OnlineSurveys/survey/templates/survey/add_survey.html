@@ -22,6 +22,16 @@
             </div>
         </div>
         <div class="row mb-3">
+            <div class='col-sm-6' style="display: flex; flex-direction: row;">
+                <label for="id_date_from_day" class="form-label">From:&nbsp;</label>
+                {{ form.date_from }}
+            </div>
+            <div class='col-sm-6' style="display: flex; flex-direction: row;">
+                <label for="id_date_upto_day" class="form-label">To:&nbsp;</label>
+                {{ form.date_upto }}
+            </div>
+        </div>
+<!--        <div class="row mb-3">
             <div class='col-sm-6'>
                 <label for="id_date_from" class="form-label">Survey start date</label>
                 <input type="datetime-local" class="form-control" value="{{ form.initial.date_from.year }}-{{ form.initial.date_from.month }}-{% if form.initial.date_from.day < 10 %}0{% endif %}{{ first_zero }}{{ form.initial.date_from.day }}T{{ form.initial.date_from.hour }}:{{ form.initial.date_from.minute }}" name="date_from" id="id_date_from" aria-describedby="inputDateTimepickerFromHelp" required />
@@ -32,7 +42,7 @@
                 <input type="datetime-local" class="form-control" name="date_upto" id="id_date_upto" aria-describedby="inputDateTimepickerUptoHelp" required />
                 <div id="inputDateTimepickerUptoHelp" class="form-text">Even if status is Active the Survey will be inactived after this date. Also you can leave the field empty</div>
             </div>
-        </div>
+        </div>-->
         <div class="form-check mb-3">
             <input class="form-check-input" type="checkbox" name="is_anonymous_allowed" id="id_is_anonymous_allowed" checked>
             <label class="form-check-label" for="id_is_anonymous_allowed">
@@ -40,5 +50,6 @@
             </label>
         </div>
         <button type="submit" class="btn btn-primary mb-4">Add survey</button>
+        <a href="/surveys"><button type="button" class="btn btn-secondary mb-4">Close</button></a>
     </form>
 {% endblock content %}

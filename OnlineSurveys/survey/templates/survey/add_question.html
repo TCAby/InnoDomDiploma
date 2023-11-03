@@ -21,7 +21,7 @@
         {% csrf_token %}
         <div class="mb-3">
             <label for="id_question" class="form-label">Question<i class="bi bi-asterisk"></i></label>
-            <input type="text" class="form-control" value="{{ form.initial.question }}" name="question" id="id_question" aria-describedby="inputQuestionTextHelp" required>
+            <input type="text" class="form-control" value="{{ form.initial.question }}" name="text" id="id_text" aria-describedby="inputQuestionTextHelp" required>
             <div id="inputQuestionTextHelp" class="form-text">This is necessary field.</div>
         </div>
         <div class="form-check mb-3">

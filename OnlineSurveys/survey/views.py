@@ -2,9 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.urls import reverse
 from django.db import transaction
-from .models import Questionare, Question, Answer
 import datetime
 
+from .models import Questionare, Question, Answer
 from .forms import AddSurveyForm, AddQuestionForm, EditSurveyForm, EditQuestionForm
 
 
@@ -33,31 +33,34 @@ def surveys(request):
 def edit_survey(request, id):
     num_visits = request.session.get('num_visits', 0)
     # request.session['num_visits']=num_visits+1
-    try:
-        current_survey = Questionare.objects.get(id=id)
 
-        if request.method == 'POST':
-            current_survey.title = request.POST.get('title')
-            current_survey.activity_status = request.POST.get('activity_status')
-            current_survey.date_from = request.POST.get('date_from')
-            current_survey.date_upto = request.POST.get('date_upto')
-            current_survey.is_anonymous = request.POST.get('is_anonymous')
+    try:
+        questionare = Questionare.objects.get(id=id)
+        form = EditSurveyForm(instance=questionare)
+        if request.method == "POST":
+            form = EditSurveyForm(request.POST, instance=questionare)
+            if form.is_valid():
+                form.save()
+                selected_questions = form.cleaned_data['new_questions']
+                for question in selected_questions:
+                    question.questionare = questionare
+                    question.save()
+                selected_questions = form.cleaned_data['exist_questions']
+                for question in selected_questions:
+                    question.questionare = None
+                    question.save()
+                return HttpResponseNotFound(f"<h2>Edit done!</h2> <a href='/surveys'>Return back</a>")
         else:
-            form = EditSurveyForm(initial={'title': current_survey.title,
-                                           'date_from': current_survey.date_from,
-                                           'date_upto': current_survey.date_upto,
-                                           'activity_status': current_survey.activity_status,
-                                           'is_anonymous': current_survey.is_anonymous},
-                                  )
             context = {
-                'title': 'Edit the survey',
+                'title': 'Edit survey',
                 'form': form,
                 'num_visits': num_visits,
-                'survey': current_survey,
             }
             return render(request, 'survey/edit_survey.html', context)
     except Questionare.DoesNotExist:
-        return HttpResponseNotFound("<h2>Survey not found</h2>")
+        return HttpResponseNotFound(f"<h2>The survey (id={id}) not found</h2> <a href='/surveys'>Return back</a>")
+    #except:
+    #    return HttpResponseNotFound(f"<h2>Anything go wrong for the survey (id={id})!</h2> <a href='/surveys'>Return back</a>")
 
 
 def remove_survey(request, id):
@@ -77,25 +80,7 @@ def add_survey(request):
     if request.method == 'POST':
         form = AddSurveyForm(request.POST)
         if form.is_valid():
-            form_data = form.data
-
-            if 'is_anonymous' in form_data:
-                anon = True
-            else:
-                anon = False
-            if form_data['date_upto'] == '':
-                d_upto = '0000-00-00'
-            else:
-                d_upto = form_data['date_upto']
-            questionare = Questionare.objects.create(
-                title=form_data['title'],
-                activity_status=form_data['activity_status'],
-                date_from=form_data['date_from'],
-                date_upto=form_data['date_upto'],
-                is_anonymous=anon,
-            )
-            questionare.save()
-
+            form.save()
             return HttpResponseRedirect(reverse(surveys))
         else:
             print(form.data)
@@ -104,7 +89,7 @@ def add_survey(request):
             print(form_clean_data)
             return HttpResponse('We got your data', content_type='text/plain', status=201)
     else:
-        form = AddSurveyForm(initial={'title': 'New survey', 'date_from': datetime.datetime.now()})
+        form = AddSurveyForm(initial={'title': 'New survey', 'date_from': datetime.datetime.today(), 'date_upto': datetime.datetime.today() + datetime.timedelta(days=1)})
         context = {
             'title': 'Add new survey',
             'form': form,
@@ -152,11 +137,11 @@ def add_question(request):
                 qid = transaction.savepoint()
                 try:
                     question = Question.objects.create(
-                        question_text=form_data['question'],
+                        text=form_data['text'],
                         is_allow_multiple_answers=is_mult,
                     )
                 except Exception:
-                    print (f"Exception on Question save: ", Exception)
+                    print (f"Exception on Question save: ", Exception.__name__)
                     transaction.savepoint_rollback(qid)
                 else:
                     question.save()
