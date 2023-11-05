@@ -17,9 +17,15 @@ class DateTimeLocalInput(forms.DateTimeInput):
 class AddSurveyForm(ModelForm):
     date_from = forms.DateTimeField(widget=forms.SelectDateWidget(attrs={'class': 'form-select', 'name': 'date_from'}))
     date_upto = forms.DateTimeField(widget=forms.SelectDateWidget(attrs={'class': 'form-select', 'name': 'date_from'}))
+    new_questions = forms.ModelMultipleChoiceField(
+        queryset=Question.objects.filter(questionare=None),
+        widget=forms.CheckboxSelectMultiple(),
+        required=False
+    )
+
     class Meta:
         model = Questionare
-        fields = ['title', 'activity_status', 'date_from', 'date_upto', 'is_anonymous']
+        fields = ['title', 'activity_status', 'date_from', 'date_upto', 'is_anonymous', 'introduction_text', 'new_questions']
 
 
 class EditSurveyForm(ModelForm):
@@ -38,7 +44,7 @@ class EditSurveyForm(ModelForm):
 
     class Meta:
         model = Questionare
-        fields = ['title', 'activity_status', 'date_from', 'date_upto', 'is_anonymous', 'new_questions', 'exist_questions']
+        fields = ['title', 'activity_status', 'date_from', 'date_upto', 'is_anonymous', 'introduction_text', 'new_questions', 'exist_questions']
 
 
 class AddQuestionForm(Form):
@@ -53,4 +59,7 @@ class AddQuestionForm(Form):
 class EditQuestionForm(Form):
     pass
 
+
+class FillSurveyForm(Form):
+    pass
 

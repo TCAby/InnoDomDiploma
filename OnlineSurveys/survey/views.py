@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseBadRequest
 from django.urls import reverse
 from django.db import transaction
 import datetime
 
 from .models import Questionare, Question, Answer
-from .forms import AddSurveyForm, AddQuestionForm, EditSurveyForm, EditQuestionForm
+from .forms import AddSurveyForm, AddQuestionForm, EditSurveyForm, EditQuestionForm, FillSurveyForm
 
 
 def home(request):
@@ -49,10 +49,10 @@ def edit_survey(request, id):
                 for question in selected_questions:
                     question.questionare = None
                     question.save()
-                return HttpResponseNotFound(f"<h2>Edit done!</h2> <a href='/surveys'>Return back</a>")
+                return HttpResponse(f"<h2>Edit done!</h2> <a href='/surveys'>Return back</a>")
         else:
             context = {
-                'title': 'Edit survey',
+                'title': 'Edit the survey',
                 'form': form,
                 'num_visits': num_visits,
             }
@@ -97,6 +97,62 @@ def add_survey(request):
         }
         return render(request, 'survey/add_survey.html', context)    
 
+
+def survey(request, id):
+    num_visits = request.session.get('num_visits', 0)
+    if request.method == 'GET':
+        try:
+            questionare = Questionare.objects.get(id=id)
+        except Questionare.DoesNotExist:
+            return HttpResponseNotFound(f"<h2>The survey (id={id}) not found</h2> Check URL or <a href='/surveys'>Return back</a>")
+
+        if not questionare.is_anonymous:
+            pass    # ToDo Authorization form
+
+        questions = Question.objects.filter(questionare=questionare).order_by('?')
+        numb_questions = questions.count()
+        request.session['survey'] = id
+        request.session['questions'] = [q.id for q in questions]
+        request.session['questions_details'] = {'current_question': 0, 'questions_number': numb_questions}
+
+        form = FillSurveyForm(initial={'questionare': questionare,})
+        context = {
+            'title': questionare.title,
+            'form': form,
+            'num_visits': num_visits,
+        }
+        return render(request, 'survey/survey.html', context)
+    else:
+        survey_id = request.session.get('survey')
+        question_ids = request.session.get('questions')
+
+        if not survey_id or not question_ids or survey_id != id:
+            return HttpResponseBadRequest("Incorrect request: Survey and/or questions not found in session")
+
+        questions_details = request.session.get('questions_details')
+        if questions_details['current_question'] < questions_details['questions_number']:
+            request.session['questions_details'] = {'current_question': questions_details['current_question'] + 1, 'questions_number': questions_details['questions_number']}
+            questions_details = request.session.get('questions_details')
+            question = Question.objects.get(id=question_ids[questions_details['current_question']-1])
+            answers = Answer.objects.filter(question=question).order_by('?')
+            print(question.text, question.is_allow_multiple_answers, answers)
+            questionare = Questionare.objects.get(id=id)
+            form = FillSurveyForm(initial={'questionare': questionare, })
+            context = {
+                'question': question,
+                'answers': answers,
+                'question_details': questions_details,
+                'progress': (int)(questions_details['current_question'] / questions_details['questions_number'] * 100),
+                'title': questionare.title,
+                'form': form,
+                'num_visits': num_visits,
+            }
+        else:   # ToDo Generate result form of the survey
+            context = {
+
+            }
+
+        return render(request, 'survey/survey.html', context)
 
 def questions(request):
     num_visits = request.session.get('num_visits', 0)

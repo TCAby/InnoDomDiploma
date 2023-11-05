@@ -3,9 +3,15 @@
     <form action="" method="post">
         {% csrf_token %}
         <div class="mb-3">
-            <label for="id_title" class="form-label">Survey Title&nbsp;<i class="bi bi-asterisk"></i></label>
-            <input type="text" class="form-control" value="{{ form.initial.title }}" name="title" id="id_title" aria-describedby="inputSurveyTitleHelp" required>
-            <div id="inputSurveyTitleHelp" class="form-text">This is necessary field. You have to use unique name for the survey.</div>
+            <div class="input-group">
+                <span class="input-group-text">Survey Title&nbsp;<i class="bi bi-asterisk"></i></span>
+                <input type="text" class="form-control" value="{{ form.initial.title }}" name="title" id="id_title" required>
+            </div>
+            <div class="form-text">This is necessary field. You have to use unique name for the survey.</div>
+        </div>
+        <div class="mb-3 input-group">
+            <span class="input-group-text">Introduction text</span>
+            <textarea class="form-control" aria-label="Introduction text" id="id_introduction_text" name="introduction_text">{{ form.initial.introduction_text }}</textarea>
         </div>
         <div class="mb-3">
             <div class="form-check form-check-inline">
@@ -40,7 +46,7 @@
         <div class="form-check mb-3" style="display: flex; flex-direction: row;">
             <div class="me-3 p-3 border">
                 <h4>Add</h4>
-                <p style="font-style: italic;"><strong>Add new</strong> questions to the survey: <br>Check waht you want to add</p>
+                <p style="font-style: italic;"><strong>Add new</strong> questions to the survey: <br>Check what you want to add</p>
                 {{ form.new_questions }}
             </div>
             <div class="ms-3 p-3 border">

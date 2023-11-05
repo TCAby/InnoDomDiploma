@@ -2,6 +2,7 @@ import datetime
 
 from django.utils import timezone
 from django.db import models
+from django.contrib.auth.models import User
 from datetime import timedelta
 from django.urls import reverse
 
@@ -25,6 +26,7 @@ class Questionare(models.Model):
 
     # Fields
     title = models.CharField(max_length=100, verbose_name='Survey Name', blank=False, default="New survey")
+    introduction_text = models.TextField(verbose_name='Introduction text', blank=True)
     activity_status = models.CharField(max_length=10, choices=ACTIVITY_STATUS, default='draft', db_index=True, verbose_name="Survey's Activity Status")
     date_from = models.DateField(default=datetime.date.today(), db_index=True, verbose_name="Date start", help_text="Date, where the survey will be started")
     date_upto = models.DateField(default=datetime.date.today() + datetime.timedelta(days=1), verbose_name="Date finish", help_text="Date, where the survey will be finished")
@@ -68,4 +70,5 @@ class Answer(models.Model):
     text = models.TextField(name="answer_text", verbose_name="Answer", blank=False, default="new answer")
     is_correct = models.BooleanField(name='is_correct', verbose_name='Correct?', help_text='Is the answer is correct', default=False)
 
-        
+
+#class Response(models.Model):

@@ -1,0 +1,31 @@
+{% extends "survey/base_filling.html" %}
+{% block content %}
+    <div class="row">
+        <form method="post">
+            {% csrf_token %}
+            <div class="d-grid gap-2">
+                {% if question %}
+                    <div class="progress" role="progressbar" aria-label="Default striped example" aria-valuenow="{{progress}}" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar progress-bar-striped bg-success progress-bar-animated" style="width: {{progress}}%"></div>
+                    </div>
+                    <h1>{{question}}</h1>
+                    {% for answer in answers %}
+                        <div class="input-group mb-3">
+                            <div class="input-group-text">
+                        {% if question.is_allow_multiple_answers %}
+                                <input class="form-check-input mt-0" type="checkbox">
+                        {% else %}
+                                <input class="form-check-input mt-0" type="radio">
+                        {% endif %}
+                            </div>
+                            <input type="text" class="form-control" aria-label="" value="{{ answer.answer_text }}" desibled>
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-success">Send answer</button>
+                {% else %}
+                    <button type="submit" class="btn btn-success">Go!</button>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+{% endblock content %}

@@ -22,36 +22,23 @@
     {% if title %}
         <title>{{ title }}</title>
     {% else %}
-        <title>Online Survey system</title>
+        <title>Fill the survey!</title>
     {% endif %}
 </head>
 <body>
     <div class="container-fluid">
         {% if title %}
-        <h1 style="text-align: center;">Online Surveys system</h1>
+        <h1 style="text-align: center;">Fill the survey!</h1>
         <h2 style="text-align: center;">{{ title }}</h2>
         {% else %}
         {% endif %}
         <div class="row">
-            <div class="col-lg-3 col-md-4 col-sm-6">
-                <button class="btn btn-primary d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#menu" aria-expanded="false" aria-controls="menu">
-                    Menu
-                </button>
-                <ul id="menu" class="list-group collapse show d-md-block">
-                    <li class="list-group-item"><a href="/">Home page</a></li>
-                    <li class="list-group-item"><a href="/surveys">Surveys</a></li>
-                    <li class="list-group-item"><a href="/questions">Questions</a></li>
-                    <li class="list-group-item"><a href="#">Users</a></li>
-                </ul>
-            </div>
-            <div class="col-lg-9 col-md-8 col-sm-6">
+            <div class="col-12">
                 <main role="main" class="container">
-                    <div class="row">
-                        <div class="col-md-12">
-                            {% block content %}{% endblock %}
-                        </div>
+                    <div class="mb-5 text-center">{{ form.initial.questionare.introduction_text|safe }}</div>
+                    <div class="col-md-12">
+                        {% block content %}{% endblock %}
                     </div>
-
                 </main>
             </div>
         </div>
