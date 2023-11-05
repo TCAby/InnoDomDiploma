@@ -71,4 +71,9 @@ class Answer(models.Model):
     is_correct = models.BooleanField(name='is_correct', verbose_name='Correct?', help_text='Is the answer is correct', default=False)
 
 
-#class Response(models.Model):
+class Response(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    questionare = models.ForeignKey(Questionare, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True)
