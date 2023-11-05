@@ -30,8 +30,9 @@ class Questionare(models.Model):
     activity_status = models.CharField(max_length=10, choices=ACTIVITY_STATUS, default='draft', db_index=True, verbose_name="Survey's Activity Status")
     date_from = models.DateField(default=datetime.date.today(), db_index=True, verbose_name="Date start", help_text="Date, where the survey will be started")
     date_upto = models.DateField(default=datetime.date.today() + datetime.timedelta(days=1), verbose_name="Date finish", help_text="Date, where the survey will be finished")
-    is_anonymous = models.BooleanField(verbose_name='Allow Annonimouse', default=True)
-    
+    is_anonymous = models.BooleanField(verbose_name='Allow Anonymous', default=True)
+    must_answers = models.BooleanField(verbose_name='Is all answers mandatory', default=True)
+
     # Metadata
     class Meta:
         ordering = ("-date_from", "activity_status")
@@ -72,7 +73,7 @@ class Answer(models.Model):
 
 
 class Response(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     questionare = models.ForeignKey(Questionare, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE)

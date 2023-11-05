@@ -13,12 +13,12 @@
                         <div class="input-group mb-3">
                             <div class="input-group-text">
                         {% if question.is_allow_multiple_answers %}
-                                <input class="form-check-input mt-0" type="checkbox">
+                                <input class="form-check-input mt-0" type="checkbox" name="answer[]" id="id_answer[{{answer.id}}]" value="{{answer.id}}">
                         {% else %}
-                                <input class="form-check-input mt-0" type="radio">
+                                <input class="form-check-input mt-0" type="radio" name="answer[]" id="id_answer[{{answer.id}}]" value="{{answer.id}}">
                         {% endif %}
                             </div>
-                            <input type="text" class="form-control" aria-label="" value="{{ answer.answer_text }}" desibled>
+                            <input type="text" class="form-control" aria-label="" value="{{ answer.answer_text }}" disabled>
                         </div>
                     {% endfor %}
                     <button type="submit" class="btn btn-success">Send answer</button>

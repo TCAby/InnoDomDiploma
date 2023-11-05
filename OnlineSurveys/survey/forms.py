@@ -3,7 +3,7 @@ from django.forms import Form, ModelForm, TextInput
 from django.core.exceptions import ValidationError
 import datetime  # for checking renewal date range.
 from django.utils import timezone
-from .models import Questionare, Question, Answer
+from .models import Questionare, Question, Answer, Response
 
 
 class DateTimeLocalInput(forms.DateTimeInput):
@@ -25,7 +25,7 @@ class AddSurveyForm(ModelForm):
 
     class Meta:
         model = Questionare
-        fields = ['title', 'activity_status', 'date_from', 'date_upto', 'is_anonymous', 'introduction_text', 'new_questions']
+        fields = ['title', 'activity_status', 'date_from', 'date_upto', 'is_anonymous', 'must_answers', 'introduction_text', 'new_questions']
 
 
 class EditSurveyForm(ModelForm):
@@ -44,7 +44,7 @@ class EditSurveyForm(ModelForm):
 
     class Meta:
         model = Questionare
-        fields = ['title', 'activity_status', 'date_from', 'date_upto', 'is_anonymous', 'introduction_text', 'new_questions', 'exist_questions']
+        fields = ['title', 'activity_status', 'date_from', 'date_upto', 'is_anonymous', 'must_answers', 'introduction_text', 'new_questions', 'exist_questions']
 
 
 class AddQuestionForm(Form):
@@ -61,5 +61,8 @@ class EditQuestionForm(Form):
 
 
 class FillSurveyForm(Form):
-    pass
+
+    class Meta:
+        model = Response
+        #fields = ['answer[]']
 
