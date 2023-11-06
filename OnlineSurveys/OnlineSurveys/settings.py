@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 ]   # Apps by default
 
 INSTALLED_APPS += [
+    'accounts',
     'survey',
 ]   # custom Apps
 
@@ -122,11 +123,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = BASE_DIR + "/static/"
+STATIC_URL = "static/"
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(PROJECT_ROOT, "static")
 STATICFILES_DIRS = [
    os.path.join(BASE_DIR, "static"),
+    '/var/www/static/',
 ]
 
 # Default primary key field type

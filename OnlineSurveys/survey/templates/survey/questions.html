@@ -8,12 +8,12 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ question.text }}</h5>
                     <div class="card-text">
-                        <p class="text-body-secondary">{{ question.questionare_id }}</p>
+                        <p class="text-body-secondary"><em>Attached to the Survey: <strong>{{ question.questionare }}</strong></em></p>
                     </div>
                 </div>
                 <div class="card-footer">
-                    <a href="/edit-question/{{ question.id }}" class="card-link">Edit question</a>
-                    <a href="/remove-question/{{ question.id }}" class="card-link">Remove question</a>
+                    <a href="/surveys/questions/edit/{{ question.id }}" class="card-link">Edit question</a>
+                    <a href="/surveys/questions/remove/{{ question.id }}" class="card-link">Remove question</a>
                 </div>
             </div>
         </div>        
