@@ -5,6 +5,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from datetime import timedelta
 from django.urls import reverse
+#from accounts.models import SurveyUser, SurveySession
 
 # Create your models here.
 
@@ -73,8 +74,9 @@ class Answer(models.Model):
 
 
 class Response(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    user = models.ForeignKey('accounts.SurveyUser', on_delete=models.CASCADE, blank=True, null=True)
     questionare = models.ForeignKey(Questionare, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
+    survey_session = models.ForeignKey('accounts.SurveySession', on_delete=models.CASCADE, blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)

@@ -79,5 +79,4 @@ class FillSurveyForm(Form):
 
     class Meta:
         model = Response
-        #fields = ['answer[]']
 

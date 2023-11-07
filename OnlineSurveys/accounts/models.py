@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+# from survey.models import Response
+
 
 class SurveyUser(AbstractUser):
     ROLES = (
@@ -36,3 +38,8 @@ class UserProfile(models.Model):
     user = models.OneToOneField(SurveyUser, on_delete=models.CASCADE)
     bio = models.TextField(blank=True)
 
+
+class SurveySession(models.Model):
+    user = models.ForeignKey(SurveyUser, on_delete=models.CASCADE)
+    responses = models.ManyToManyField('survey.Response')
+    session_key = models.CharField(max_length=100)

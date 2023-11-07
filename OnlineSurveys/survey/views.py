@@ -2,11 +2,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseBadRequest
 from django.urls import reverse
 from django.db import transaction
-#from django.contrib.auth.models import AnonymousUser
+from django.contrib.auth.models import AnonymousUser
+from django.contrib.auth.decorators import login_required
 import datetime
 
 from .models import Questionare, Question, Answer, Response
 from .forms import AddSurveyForm, AddQuestionForm, EditSurveyForm, EditQuestionForm, FillSurveyForm
+from accounts.models import SurveyUser
 
 
 def home(request):
@@ -18,7 +20,7 @@ def home(request):
     }
     return render(request, 'survey/home.html', context)
 
-
+@login_required
 def surveys(request):
     # Number of visits to this view, as counted in the session variable.
     num_visits = request.session.get('num_visits', 0)
@@ -143,7 +145,8 @@ def survey(request, id):
                 user=current_user,
                 questionare=questionare,
                 question=question,
-                answer=Answer.objects.get(id=answer_id)
+                answer=Answer.objects.get(id=answer_id),
+                session_key=request.session.session_key
             )
             response.save()
 
