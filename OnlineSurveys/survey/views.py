@@ -2,9 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseBadRequest
 from django.urls import reverse
 from django.db import transaction
+#from django.contrib.auth.models import AnonymousUser
 import datetime
 
-from .models import Questionare, Question, Answer
+from .models import Questionare, Question, Answer, Response
 from .forms import AddSurveyForm, AddQuestionForm, EditSurveyForm, EditQuestionForm, FillSurveyForm
 
 
@@ -36,31 +37,30 @@ def edit_survey(request, id):
 
     try:
         questionare = Questionare.objects.get(id=id)
-        form = EditSurveyForm(instance=questionare)
-        if request.method == "POST":
-            form = EditSurveyForm(request.POST, instance=questionare)
-            if form.is_valid():
-                form.save()
-                selected_questions = form.cleaned_data['new_questions']
-                for question in selected_questions:
-                    question.questionare = questionare
-                    question.save()
-                selected_questions = form.cleaned_data['exist_questions']
-                for question in selected_questions:
-                    question.questionare = None
-                    question.save()
-                return HttpResponse(f"<h2>Edit done!</h2> <a href='/surveys'>Return back</a>")
-        else:
-            context = {
-                'title': 'Edit the survey',
-                'form': form,
-                'num_visits': num_visits,
-            }
-            return render(request, 'survey/edit_survey.html', context)
     except Questionare.DoesNotExist:
         return HttpResponseNotFound(f"<h2>The survey (id={id}) not found</h2> <a href='/surveys'>Return back</a>")
-    #except:
-    #    return HttpResponseNotFound(f"<h2>Anything go wrong for the survey (id={id})!</h2> <a href='/surveys'>Return back</a>")
+
+    if request.method == "POST":
+        form = EditSurveyForm(request.POST, instance=questionare)
+        if form.is_valid():
+            form.save()
+            selected_questions = form.cleaned_data['new_questions']
+            for question in selected_questions:
+                question.questionare = questionare
+                question.save()
+            selected_questions = form.cleaned_data['exist_questions']
+            for question in selected_questions:
+                question.questionare = None
+                question.save()
+            return HttpResponse(f"<h2>Edit done!</h2> <a href='/surveys'>Return back</a>")
+    else:
+        form = EditSurveyForm(instance=questionare)
+        context = {
+            'title': 'Edit survey',
+            'form': form,
+            'num_visits': num_visits,
+        }
+        return render(request, 'survey/edit_survey.html', context)
 
 
 def remove_survey(request, id):
@@ -69,7 +69,7 @@ def remove_survey(request, id):
         # FixMe ToDo Add question-confirmation before delete
         survey.delete()
     except Questionare.DoesNotExist:
-        return HttpResponseNotFound("<h2>Survey not found</h2>")
+        return HttpResponseNotFound(f"<h2>Survey (id={id}) not found</h2>")
     else:
         return HttpResponseRedirect(reverse(surveys))
 
@@ -83,10 +83,8 @@ def add_survey(request):
             form.save()
             return HttpResponseRedirect(reverse(surveys))
         else:
-            print(form.data)
             form.full_clean()
             form_clean_data = form.cleaned_data
-            print(form_clean_data)
             return HttpResponse('We got your data', content_type='text/plain', status=201)
     else:
         form = AddSurveyForm(initial={'title': 'New survey', 'date_from': datetime.datetime.today(), 'date_upto': datetime.datetime.today() + datetime.timedelta(days=1)})
@@ -130,24 +128,49 @@ def survey(request, id):
             return HttpResponseBadRequest("Incorrect request: Survey and/or questions not found in session")
 
         questions_details = request.session.get('questions_details')
-        if questions_details['current_question'] < questions_details['questions_number']:
-            request.session['questions_details'] = {'current_question': questions_details['current_question'] + 1, 'questions_number': questions_details['questions_number']}
+        answer_ids = request.POST.getlist('answer[]')
+        questionare = Questionare.objects.get(id=id)
+        question = Question.objects.get(id=question_ids[questions_details['current_question'] - 1])
+
+        # ToDo
+        if type(request.user) == 'django.utils.functional.SimpleLazyObject':
+            current_user = request.user
+        else:
+            current_user = None
+
+        for answer_id in answer_ids:
+            response = Response.objects.create(
+                user=current_user,
+                questionare=questionare,
+                question=question,
+                answer=Answer.objects.get(id=answer_id)
+            )
+            response.save()
+
+        if questionare.must_answers:
+            if questions_details['current_question'] >= 0:
+                if len(answer_ids) > 0:
+                    request.session['questions_details'] = {'current_question': questions_details['current_question'] + 1, 'questions_number': questions_details['questions_number']}
+                    questions_details = request.session.get('questions_details')
+        else:
+            request.session['questions_details'] = {'current_question': questions_details['current_question'] + 1,
+                                                    'questions_number': questions_details['questions_number']}
             questions_details = request.session.get('questions_details')
+
+        if questions_details['current_question'] < questions_details['questions_number']:
             question = Question.objects.get(id=question_ids[questions_details['current_question']-1])
             answers = Answer.objects.filter(question=question).order_by('?')
-            print(question.text, question.is_allow_multiple_answers, answers)
-            questionare = Questionare.objects.get(id=id)
             form = FillSurveyForm(initial={'questionare': questionare, })
             context = {
                 'question': question,
                 'answers': answers,
                 'question_details': questions_details,
-                'progress': (int)(questions_details['current_question'] / questions_details['questions_number'] * 100),
+                'progress': (int)((questions_details['current_question']+1) / questions_details['questions_number'] * 100),
                 'title': questionare.title,
                 'form': form,
                 'num_visits': num_visits,
             }
-        else:   # ToDo Generate result form of the survey
+        else:  # ToDo Generate result form of the survey
             context = {
 
             }
@@ -175,7 +198,6 @@ def add_question(request):
             answers = [(x, False) for x in request.POST.getlist('answer[]')]
             i = 0
             for is_correct in enumerate(request.POST.getlist('is_correct_answer[]')):
-                print(i, is_correct, is_correct[1] == 'on')
                 if is_correct[1] == 'on':
                     if i == 0:
                         answers[i] = (answers[i][0], True)
@@ -204,7 +226,6 @@ def add_question(request):
                     aid = transaction.savepoint()
                     try:
                         for ans in answers:
-                            print(ans)
                             answer = Answer.objects.create(
                                 question=question,
                                 answer_text=ans[0],
@@ -217,10 +238,8 @@ def add_question(request):
                 finally:
                     return HttpResponseRedirect(reverse(questions))
         else:
-            print(form.data)
             form.full_clean()
             form_clean_data = form.cleaned_data
-            print(form_clean_data)
             return HttpResponse('We got your data', content_type='text/plain', status=201)
     else:
         form = AddQuestionForm(initial={'question': 'New question',})
@@ -233,7 +252,65 @@ def add_question(request):
 
 
 def edit_question(request, id):
-    pass
+    num_visits = request.session.get('num_visits', 0)
+    # request.session['num_visits']=num_visits+1
+    try:
+        question = Question.objects.get(id=id)
+    except Question.DoesNotExist:
+        return HttpResponseNotFound(
+            f"<h2>Question (id={id}) not found</h2> <a href='/surveys/questions/'>Return back</a>")
+
+    if request.method == 'POST':
+        form = EditQuestionForm(request.POST, instance=question)
+        if form.is_valid():
+            form.save()
+            existed_answers = Answer.objects.filter(question=question)
+            answers = [(x, False) for x in request.POST.getlist('answer[]')]
+            answers_ids = request.POST.getlist('answer_id[]')
+            for ex_ans in existed_answers:
+                if str(ex_ans.id) not in answers_ids:
+                    ex_ans.delete()
+            i = 0
+            for is_correct in enumerate(request.POST.getlist('is_correct_answer[]')):
+                if is_correct[1] == 'on':
+                    if i == 0:
+                        answers[i] = (answers[i][0], True)
+                    else:
+                        answers[i-1] = (answers[i-1][0], True)
+                else:
+                    i += 1
+
+            i = 0
+            for ans in answers:
+                if answers_ids[i] == '0':
+                    answer = Answer.objects.create(
+                        question=question,
+                        answer_text=ans[0],
+                        is_correct=ans[1],
+                    )
+                    answer.save()
+                else:
+                    answer = Answer.objects.get(id=answers_ids[i])
+                    answer.answer_text = ans[0]
+                    answer.is_correct = ans[1]
+                    answer.save(update_fields=['answer_text', 'is_correct'])
+                i += 1
+
+            return HttpResponseRedirect(reverse(questions))
+        else:
+            form.full_clean()
+            form_clean_data = form.cleaned_data
+            return HttpResponse('We got your data', content_type='text/plain', status=201)
+    else:
+        form = EditQuestionForm(instance=question)
+        answers = Answer.objects.filter(question=question)
+        context = {
+            'title': 'Edit the question',
+            'form': form,
+            'answers': answers,
+            'num_visits': num_visits,
+        }
+        return render(request, 'survey/edit_question.html', context)
 
 
 def remove_question(request, id):

@@ -5,7 +5,8 @@
       <tr class="table-row">
           <td class="row-number"></td>
         <td>
-          <input type="text" name="answer[]" class="form-control" required>
+            <input type="hidden" name="answer_id[]" value="0">
+            <input type="text" name="answer[]" class="form-control" required>
         </td>
         <td>
             <input type="hidden" name="is_correct_answer[]" value="off">
@@ -21,11 +22,11 @@
         {% csrf_token %}
         <div class="mb-3">
             <label for="id_text" class="form-label">Question<i class="bi bi-asterisk"></i></label>
-            <input type="text" class="form-control" value="{{ form.initial.question }}" name="text" id="id_text" aria-describedby="inputQuestionTextHelp" required>
+            <input type="text" class="form-control" value="{{ form.initial.text }}" name="text" id="id_text" aria-describedby="inputQuestionTextHelp" required>
             <div id="inputQuestionTextHelp" class="form-text">This is necessary field.</div>
         </div>
         <div class="form-check mb-3">
-            <input class="form-check-input" type="checkbox" name="is_allow_multiple_answers" id="id_is_allow_multiple_answers">
+            <input class="form-check-input" type="checkbox" name="is_allow_multiple_answers" id="id_is_allow_multiple_answers" {% if form.initial.is_allow_multiple_answers %}checked{% endif %}>
             <label class="form-check-label" for="id_is_allow_multiple_answers">
               Is multiple answers allowed?
             </label>
@@ -43,27 +44,29 @@
                     </tr>
                 </thead>
                 <tbody id="table-body">
-                    <!-- not less than one answer is necessary -->
-                    <tr data-id="1">
-                        <td class="row-number" data-id="1">1</td>
+                    {% for answer in answers %}
+                    <tr data-id="{{answer.id}}">
+                        <td class="row-number" data-id="{{answer.id}}">{{forloop.counter}}</td>
                         <td>
-                            <input type="text" name="answer[]" class="form-control" required>
+                            <input type="hidden" name="answer_id[]" id="id_answer_id[{{answer.id}}]" value="{{answer.id}}">
+                            <input type="text" name="answer[]" class="form-control" id="id_answer[{{answer.id}}]" value="{{answer.answer_text}}" required>
                         </td>
                         <td>
-                            <input type="hidden" name="is_correct_answer[]" value="off">
-                            <input class="form-check-input" type="checkbox" name="is_correct_answer[]" value="on">
+                            <input type="hidden" name="is_correct_answer[]" id="id_is_correct_answer[{{answer.id}}]" value="off">
+                            <input class="form-check-input" type="checkbox" name="is_correct_answer[]" id="id_is_correct_answer[{{answer.id}}]" value="on"  {% if answer.is_correct %}checked{% endif %}>
                         </td>
                             <td>
-                                <button type="button" class="btn btn-outline-danger delete-row" disabled>Remove the answer</button>
+                                <button type="button" class="btn btn-outline-danger delete-row">Remove the answer</button>
                             </td>
                     </tr>
+                    {% endfor %}
                     <!-- table rows will be added here -->
                 </tbody>
             </table>
         </div>
         <div class="mb-4" style="text-align: center;"><button type="button" class="btn btn-outline-secondary" id="add-row">Add answer</button></div>
 
-        <button type="submit" class="btn btn-primary mb-4">Send question</button>
+        <button type="submit" class="btn btn-primary mb-4">Update the question</button>
         <a href="/surveys/questions/"><button type="button" class="btn btn-secondary mb-4">Close</button></a>
     </form>
 
@@ -73,9 +76,7 @@
 <script>
     var counter = 1
   $(function() {
-    // click handler on "Add Row" button
     $('#add-row').click(function() {
-      // clone table row template
       var $template = $('#row-template').html();
       var $row = $($template);
       $row.find('.row-number').text(counter);
@@ -89,7 +90,6 @@
       var rowId = $(this).closest('tr').data('id');
     });
 
-    // click handler on "Delete" button
     $('#table-body').on('click', '.delete-row', function() {
       $(this).closest('tr').remove();
     });
