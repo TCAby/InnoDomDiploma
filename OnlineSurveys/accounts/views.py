@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.models import Group
 
 from .models import UserProfile
 from .forms import SurveyUserRegistrationForm
@@ -16,6 +16,10 @@ def register(request):
             new_user.set_password(user_form.cleaned_data['password'])
             # Save the User object
             new_user.save()
+            # Add new user to the specified group
+            group = Group.objects.get(name='Survey Users')
+            group.user_set.add(new_user
+                               )
             return render(request, 'accounts/register_done.html', {'new_user': new_user})
     else:
         user_form = SurveyUserRegistrationForm()
