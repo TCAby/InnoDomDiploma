@@ -314,7 +314,14 @@ def edit_question(request, id):
 
 
 def remove_question(request, id):
-    pass
+    try:
+        question = Question.objects.get(id=id)
+        # FixMe ToDo Add question-confirmation before delete
+        question.delete()
+    except Question.DoesNotExist:
+        return HttpResponseNotFound(f"<h2>Question (id={id}) not found</h2>")
+    else:
+        return HttpResponseRedirect(reverse(questions))
 
 
 def answer(request):
