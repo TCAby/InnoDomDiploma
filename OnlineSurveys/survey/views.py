@@ -8,7 +8,7 @@ import datetime
 
 from .models import Questionare, Question, Answer, Response
 from .forms import AddSurveyForm, AddQuestionForm, EditSurveyForm, EditQuestionForm, FillSurveyForm
-from accounts.models import SurveyUser
+# from accounts.models import SurveyUser
 
 
 def home(request):
@@ -32,6 +32,7 @@ def surveys(request):
     return render(request, 'survey/surveys.html', context)
 
 
+@login_required
 def edit_survey(request, id):
     num_visits = request.session.get('num_visits', 0)
     # request.session['num_visits']=num_visits+1
