@@ -26,9 +26,11 @@ def surveyuser_register(request):
             group = Group.objects.get(name='Survey Users')
             group.surveyuser_set.add(new_user)
             return render(request, 'accounts/register_done.html', {'new_user': new_user})
+        else:
+            return HttpResponse('Registration failed, got wrong data')
     else:
         user_form = SurveyUserRegistrationForm()
-    return render(request, 'accounts/register.html', {'user_form': user_form})
+        return render(request, 'accounts/register.html', {'user_form': user_form})
 
 
 def surveyuser_login(request: HttpRequest) -> HttpResponse:
