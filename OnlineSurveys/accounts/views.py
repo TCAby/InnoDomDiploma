@@ -68,11 +68,8 @@ def admin_dashboard(request):
 
 
 class UserForgotPasswordView(SuccessMessageMixin, PasswordResetView):
-    """
-    Представление по сбросу пароля по почте
-    """
     form_class = UserForgotPasswordForm
-    template_name = 'system/user_password_reset.html'
+    template_name = 'accounts/user_password_reset.html'
     success_url = reverse_lazy('home')
     success_message = 'Письмо с инструкцией по восстановлению пароля отправлена на ваш email'
     subject_template_name = 'accounts/email/password_subject_reset_mail.txt'
