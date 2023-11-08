@@ -22,7 +22,7 @@ class SurveyUser(AbstractUser):
             'granted to each of their groups.'
         ),
         related_name='surveyuser_set',
-        related_query_name='user',
+        related_query_name='surveyuser',
     )
     user_permissions = models.ManyToManyField(
         Permission,
@@ -30,7 +30,7 @@ class SurveyUser(AbstractUser):
         blank=True,
         help_text=_('Specific permissions for this user.'),
         related_name='surveyuser_set',
-        related_query_name='user',
+        related_query_name='surveyuser',
     )
 
     def __str__(self):
