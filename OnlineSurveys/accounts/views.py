@@ -75,12 +75,12 @@ class UserForgotPasswordView(SuccessMessageMixin, PasswordResetView):
     template_name = 'system/user_password_reset.html'
     success_url = reverse_lazy('home')
     success_message = 'Письмо с инструкцией по восстановлению пароля отправлена на ваш email'
-    subject_template_name = 'system/email/password_subject_reset_mail.txt'
-    email_template_name = 'system/email/password_reset_mail.html'
+    subject_template_name = 'accounts/email/password_subject_reset_mail.txt'
+    email_template_name = 'accounts/email/password_reset_mail.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = 'Запрос на восстановление пароля'
+        context['title'] = 'Password recovery request'
         return context
 
 
