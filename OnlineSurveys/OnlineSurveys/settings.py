@@ -91,7 +91,7 @@ DATABASES = {
 
 
 # Authentifications
-AUTH_USER_MODEL = 'accounts.SurveyUser'
+# AUTH_USER_MODEL = 'accounts.SurveyUser'
 
 
 # Password validation
