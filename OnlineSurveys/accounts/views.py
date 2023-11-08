@@ -12,7 +12,7 @@ from .forms import SurveyUserRegistrationForm, SurveyUserLoginForm
 from .forms import UserForgotPasswordForm, UserSetNewPasswordForm
 
 
-def register(request):
+def surveyuser_register(request):
     if request.method == 'POST':
         user_form = SurveyUserRegistrationForm(request.POST)
         if user_form.is_valid():
@@ -31,7 +31,7 @@ def register(request):
     return render(request, 'accounts/register.html', {'user_form': user_form})
 
 
-def login(request: HttpRequest) -> HttpResponse:
+def surveyuser_login(request: HttpRequest) -> HttpResponse:
     if request.method == 'POST':
         form = SurveyUserLoginForm(request.POST)
         if form.is_valid():
@@ -51,7 +51,7 @@ def login(request: HttpRequest) -> HttpResponse:
 
 
 @login_required
-def profile(request):
+def surveyuser_profile(request):
     user = request.user
     try:
         profile = user.userprofile
