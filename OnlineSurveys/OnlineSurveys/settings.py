@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
+    'django.contrib.sites',
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
@@ -44,6 +45,8 @@ INSTALLED_APPS += [
     'accounts',
     'survey',
 ]   # custom Apps
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -85,6 +88,10 @@ DATABASES = {
         "NAME": BASE_DIR + "/db.sqlite3",
     }
 }
+
+
+# Authentifications
+AUTH_USER_MODEL = 'accounts.SurveyUser'
 
 
 # Password validation

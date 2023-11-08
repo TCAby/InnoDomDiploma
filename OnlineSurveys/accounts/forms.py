@@ -1,5 +1,6 @@
 from django import forms
 from django.forms import Form, ModelForm
+from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import SurveyUser
 
@@ -19,5 +20,26 @@ class SurveyUserRegistrationForm(ModelForm):
         return cd['password2']
 
 
-class SurveyUserLoginForm(AuthenticationForm):
-    pass
+class SurveyUserLoginForm(forms.Form):
+    username = forms.CharField()
+    password = forms.CharField(widget=forms.PasswordInput)
+
+
+class UserForgotPasswordForm(PasswordResetForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs.update({
+                'class': 'form-control',
+                'autocomplete': 'off'
+            })
+
+
+class UserSetNewPasswordForm(SetPasswordForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs.update({
+                'class': 'form-control',
+                'autocomplete': 'off'
+            })

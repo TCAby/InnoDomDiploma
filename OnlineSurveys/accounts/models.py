@@ -33,6 +33,11 @@ class SurveyUser(AbstractUser):
         related_query_name='user',
     )
 
+    def __str__(self):
+        return self.name
+
+    def __str__(self):
+        return self.email
 
 class UserProfile(models.Model):
     user = models.OneToOneField(SurveyUser, on_delete=models.CASCADE)

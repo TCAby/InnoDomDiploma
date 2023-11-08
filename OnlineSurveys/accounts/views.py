@@ -1,9 +1,15 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import Group
+from django.http import HttpResponse, HttpRequest
+from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
+from django.urls import reverse_lazy
+from django.contrib.messages.views import SuccessMessageMixin
 
-from .models import UserProfile
-from .forms import SurveyUserRegistrationForm
+from .models import UserProfile, SurveyUser
+from .forms import SurveyUserRegistrationForm, SurveyUserLoginForm
+from .forms import UserForgotPasswordForm, UserSetNewPasswordForm
 
 
 def register(request):
@@ -18,19 +24,30 @@ def register(request):
             new_user.save()
             # Add new user to the specified group
             group = Group.objects.get(name='Survey Users')
-            group.user_set.add(new_user
-                               )
+            group.surveyuser_set.add(new_user)
             return render(request, 'accounts/register_done.html', {'new_user': new_user})
     else:
         user_form = SurveyUserRegistrationForm()
     return render(request, 'accounts/register.html', {'user_form': user_form})
 
 
-def login(DataMixin, LoginView):
-    #form_class = AuthenticationForm
-    #template_name = 'accounts/login.html'
-    pass
-
+def login(request: HttpRequest) -> HttpResponse:
+    if request.method == 'POST':
+        form = SurveyUserLoginForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            user = authenticate(request, username=cd['username'], password=cd['password'])
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+                    return HttpResponse('Authenticated successfully')
+                else:
+                    return HttpResponse('Sorry, your account had been disabled')
+            else:
+                return HttpResponse('Invalid login/password')
+    else:
+        form = SurveyUserLoginForm()
+    return render(request, 'accounts/login.html', {'form': form})
 
 
 @login_required
@@ -50,3 +67,30 @@ def admin_dashboard(request):
     return render(request, 'accounts/admin_dashboard.html')
 
 
+class UserForgotPasswordView(SuccessMessageMixin, PasswordResetView):
+    """
+    Представление по сбросу пароля по почте
+    """
+    form_class = UserForgotPasswordForm
+    template_name = 'system/user_password_reset.html'
+    success_url = reverse_lazy('home')
+    success_message = 'Письмо с инструкцией по восстановлению пароля отправлена на ваш email'
+    subject_template_name = 'system/email/password_subject_reset_mail.txt'
+    email_template_name = 'system/email/password_reset_mail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Запрос на восстановление пароля'
+        return context
+
+
+class UserPasswordResetConfirmView(SuccessMessageMixin, PasswordResetConfirmView):
+    form_class = UserSetNewPasswordForm
+    template_name = 'accounts/user_password_set_new.html'
+    success_url = reverse_lazy('home')
+    success_message = 'Password successfully changed. You can login to the site.'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Create a new password'
+        return context
