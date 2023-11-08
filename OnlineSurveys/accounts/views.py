@@ -84,7 +84,7 @@ class UserForgotPasswordView(SuccessMessageMixin, PasswordResetView):
 class UserPasswordResetConfirmView(SuccessMessageMixin, PasswordResetConfirmView):
     form_class = UserSetNewPasswordForm
     template_name = 'accounts/user_password_set_new.html'
-    success_url = reverse_lazy('home')
+    success_url = reverse_lazy(surveyuser_login)
     success_message = 'Password successfully changed. You can login to the site.'
 
     def get_context_data(self, **kwargs):
