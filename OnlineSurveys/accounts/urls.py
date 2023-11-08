@@ -4,7 +4,7 @@ from .views import UserForgotPasswordView, UserPasswordResetConfirmView
 
 
 urlpatterns = [
-    path('profile/', views.surveyuser_profile, name='profile'),
+    path('', views.surveyuser_profile, name='profile'),
     path('login/', views.surveyuser_login, name='login'),
     path('register/', views.surveyuser_register, name='register'),
     path('', views.admin_dashboard, name='admin_dashboard'),

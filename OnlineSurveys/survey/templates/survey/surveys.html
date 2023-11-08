@@ -1,6 +1,8 @@
 {% extends "survey/base.html" %}
 {% block content %}
-    <div class="mb-4" style="text-align: end;"><a type="button" class="btn btn-outline-primary" href="/surveys/add/">Add new survey</a></div>
+    {% if request.user.is_staff or request.user.is_superuser or request.user.role == "admin" %}
+        <div class="mb-4" style="text-align: end;"><a type="button" class="btn btn-outline-primary" href="/surveys/add/">Add new survey</a></div>
+    {% endif %}
     <div class="row">
     {% for survey in surveys %}
         <div class="col-sm-6 mb-3 mb-sm-6">
@@ -12,9 +14,11 @@
                         <p>Start from: {{ survey.date_from }}</p>
                         <p>Finish at: {{ survey.date_upto }}</p>
                     </div>
-                    <a href="#" class="card-link">View statistic</a>
-                    <a href="/surveys/edit/{{ survey.id }}" class="card-link">Edit survey</a>
-                    <a href="/surveys/remove/{{ survey.id }}" class="card-link">Remove survey</a>
+                    {% if request.user.is_staff or request.user.is_superuser or request.user.role == "admin" %}
+                        <a href="#" class="card-link">View statistic</a>
+                        <a href="/surveys/edit/{{ survey.id }}" class="card-link">Edit survey</a>
+                        <a href="/surveys/remove/{{ survey.id }}" class="card-link">Remove survey</a>
+                    {% endif %}
                 </div>
                 <div class="card-footer">
                     <div class="d-grid gap-2">

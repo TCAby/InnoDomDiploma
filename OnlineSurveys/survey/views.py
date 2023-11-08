@@ -20,7 +20,6 @@ def home(request):
     }
     return render(request, 'survey/home.html', context)
 
-@login_required
 def surveys(request):
     # Number of visits to this view, as counted in the session variable.
     num_visits = request.session.get('num_visits', 0)
@@ -65,6 +64,7 @@ def edit_survey(request, id):
         return render(request, 'survey/edit_survey.html', context)
 
 
+@login_required
 def remove_survey(request, id):
     try:
         survey = Questionare.objects.get(id=id)
@@ -76,6 +76,7 @@ def remove_survey(request, id):
         return HttpResponseRedirect(reverse(surveys))
 
 
+@login_required
 def add_survey(request):
     num_visits = request.session.get('num_visits', 0)
     # request.session['num_visits']=num_visits+1
@@ -180,6 +181,7 @@ def survey(request, id):
 
         return render(request, 'survey/survey.html', context)
 
+@login_required
 def questions(request):
     num_visits = request.session.get('num_visits', 0)
     # request.session['num_visits']=num_visits+1
@@ -191,6 +193,7 @@ def questions(request):
     return render(request, 'survey/questions.html', context)
 
 
+@login_required
 def add_question(request):
     num_visits = request.session.get('num_visits', 0)
     # request.session['num_visits']=num_visits+1
@@ -254,6 +257,7 @@ def add_question(request):
         return render(request, 'survey/add_question.html', context)
 
 
+@login_required
 def edit_question(request, id):
     num_visits = request.session.get('num_visits', 0)
     # request.session['num_visits']=num_visits+1
@@ -316,6 +320,7 @@ def edit_question(request, id):
         return render(request, 'survey/edit_question.html', context)
 
 
+@login_required
 def remove_question(request, id):
     try:
         question = Question.objects.get(id=id)
@@ -327,9 +332,10 @@ def remove_question(request, id):
         return HttpResponseRedirect(reverse(questions))
 
 
+@login_required
 def answer(request):
     num_visits = request.session.get('num_visits', 0)
-    request.session['num_visits']=num_visits+1
+    # request.session['num_visits']=num_visits+1
     return HttpResponse('<h1>Answer</h1>')
 
 
