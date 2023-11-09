@@ -148,7 +148,7 @@ def survey(request, id):
                 questionare=questionare,
                 question=question,
                 answer=Answer.objects.get(id=answer_id),
-                session_key=request.session.session_key
+                survey_session=request.session.session_key  # FixMe "Response.survey_session" must be a "SurveySession" instance.
             )
             response.save()
 

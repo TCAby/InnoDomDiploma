@@ -1,18 +1,30 @@
-from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, Group, PermissionsMixin
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 # from survey.models import Response
 
+from .managers import SurveyUserManager
 
-class SurveyUser(AbstractUser):
+
+class SurveyUser(AbstractBaseUser, PermissionsMixin):
+    '''
     ROLES = (
         ('admin', 'Admin'),
         ('registered', 'Registered User'),
         ('anonymous', 'Anonymous'),
     )
+    '''
 
-    role = models.CharField(max_length=20, choices=ROLES, default='anonymous')
-    survey_data = models.TextField(blank=True)
+    email = models.EmailField(_('email address'), unique=True)
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    date_joined = models.DateTimeField(default=timezone.now)
+    first_name = models.CharField(max_length=50, verbose_name='First name')
+    last_name = models.CharField(max_length=50, verbose_name='Last name')
+    # role = models.CharField(max_length=20, choices=ROLES, default='anonymous')
+    # survey_data = models.TextField(blank=True)
+    '''
     groups = models.ManyToManyField(
         Group,
         verbose_name=_('groups'),
@@ -32,9 +44,11 @@ class SurveyUser(AbstractUser):
         related_name='surveyuser_set',
         related_query_name='surveyuser',
     )
+    '''
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
 
-    def __str__(self):
-        return self.name
+    objects = SurveyUserManager()
 
     def __str__(self):
         return self.email
