@@ -92,6 +92,7 @@ DATABASES = {
 
 # Authentifications
 AUTH_USER_MODEL = 'accounts.SurveyUser'
+LOGIN_URL = '/accounts/login/'
 
 
 # Password validation

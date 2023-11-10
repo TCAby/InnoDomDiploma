@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.views import redirect_to_login
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseBadRequest
 from django.urls import reverse
 from django.db import transaction
@@ -109,7 +110,7 @@ def survey(request, id):
             return HttpResponseNotFound(f"<h2>The survey (id={id}) not found</h2> Check URL or <a href='/surveys'>Return back</a>")
 
         if not questionare.is_anonymous:
-            pass    # ToDo Authorization form
+            return redirect_to_login(request.get_full_path(), login_url='/accounts/login/')
 
         questions = Question.objects.filter(questionare=questionare).order_by('?')
         numb_questions = questions.count()
