@@ -8,7 +8,7 @@ import datetime
 
 from .models import Questionare, Question, Answer, Response
 from .forms import AddSurveyForm, AddQuestionForm, EditSurveyForm, EditQuestionForm, FillSurveyForm
-# from accounts.models import SurveyUser
+from accounts.models import SurveySession
 
 
 def home(request):
@@ -137,19 +137,37 @@ def survey(request, id):
         question = Question.objects.get(id=question_ids[questions_details['current_question'] - 1])
 
         # ToDo
-        if type(request.user) == 'django.utils.functional.SimpleLazyObject':
-            current_user = request.user
+        #if type(request.user) == 'django.utils.functional.SimpleLazyObject':
+        current_user = request.user
+        if current_user is None:
+            c_id = None
         else:
-            current_user = None
+            c_id = current_user.id
+        #else:
+        #    current_user = None
+
+        session, created = SurveySession.objects.get_or_create(
+            session_key=request.session.session_key,
+            user_id=c_id
+        )
+        session.save()
 
         for answer_id in answer_ids:
-            response = Response.objects.create(
-                user=current_user,
-                questionare=questionare,
-                question=question,
-                answer=Answer.objects.get(id=answer_id),
-                survey_session=request.session.session_key  # FixMe "Response.survey_session" must be a "SurveySession" instance.
-            )
+            if c_id is None:
+                response = Response.objects.create(
+                    questionare=questionare,
+                    question=question,
+                    answer=Answer.objects.get(id=answer_id),
+                    survey_session=session
+                )
+            else:
+                response = Response.objects.create(
+                    user=current_user,
+                    questionare=questionare,
+                    question=question,
+                    answer=Answer.objects.get(id=answer_id),
+                    survey_session=session
+                )
             response.save()
 
         if questionare.must_answers:

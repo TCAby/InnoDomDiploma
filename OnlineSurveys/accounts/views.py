@@ -27,7 +27,7 @@ def surveyuser_register(request):
             group.surveyuser_set.add(new_user)
             return render(request, 'accounts/register_done.html', {'new_user': new_user})
         else:
-            return HttpResponse('Registration failed, got wrong data')
+            return render(request, 'accounts/register.html', {'user_form': user_form})
     else:
         user_form = SurveyUserRegistrationForm()
         return render(request, 'accounts/register.html', {'user_form': user_form})
@@ -38,15 +38,18 @@ def surveyuser_login(request: HttpRequest) -> HttpResponse:
         form = SurveyUserLoginForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
-            user = authenticate(request, username=cd['username'], password=cd['password'])
+            user = authenticate(request, username=cd['email'], password=cd['password'])
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    return HttpResponse('Authenticated successfully')
+                    return redirect('/')
+                    #return HttpResponse('Authenticated successfully')
                 else:
                     return HttpResponse('Sorry, your account had been disabled')
             else:
                 return HttpResponse('Invalid login/password')
+        else:
+            print(form.errors)
     else:
         form = SurveyUserLoginForm()
     return render(request, 'accounts/login.html', {'form': form})

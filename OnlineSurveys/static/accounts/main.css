@@ -51,3 +51,6 @@ span.input-group-addon i {
 .login-button{
  margin-top: 5px;
 }
+ul.errorlist {
+    border: 1px solid #f00;
+}

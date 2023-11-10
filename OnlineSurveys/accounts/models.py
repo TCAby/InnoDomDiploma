@@ -8,23 +8,14 @@ from .managers import SurveyUserManager
 
 
 class SurveyUser(AbstractBaseUser, PermissionsMixin):
-    '''
-    ROLES = (
-        ('admin', 'Admin'),
-        ('registered', 'Registered User'),
-        ('anonymous', 'Anonymous'),
-    )
-    '''
-
     email = models.EmailField(_('email address'), unique=True)
-    is_staff = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
-    date_joined = models.DateTimeField(default=timezone.now)
     first_name = models.CharField(max_length=50, verbose_name='First name')
     last_name = models.CharField(max_length=50, verbose_name='Last name')
-    # role = models.CharField(max_length=20, choices=ROLES, default='anonymous')
-    # survey_data = models.TextField(blank=True)
-    '''
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    date_joined = models.DateTimeField(default=timezone.now)
+    last_login = models.DateTimeField(null=True)
     groups = models.ManyToManyField(
         Group,
         verbose_name=_('groups'),
@@ -36,15 +27,7 @@ class SurveyUser(AbstractBaseUser, PermissionsMixin):
         related_name='surveyuser_set',
         related_query_name='surveyuser',
     )
-    user_permissions = models.ManyToManyField(
-        Permission,
-        verbose_name=_('user permissions'),
-        blank=True,
-        help_text=_('Specific permissions for this user.'),
-        related_name='surveyuser_set',
-        related_query_name='surveyuser',
-    )
-    '''
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
@@ -59,6 +42,6 @@ class UserProfile(models.Model):
 
 
 class SurveySession(models.Model):
-    user = models.ForeignKey(SurveyUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(SurveyUser, on_delete=models.CASCADE, null=True, blank=True)
     responses = models.ManyToManyField('survey.Response')
     session_key = models.CharField(max_length=100)
