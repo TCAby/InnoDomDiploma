@@ -192,12 +192,12 @@ def survey(request, id):
             }
             return render(request, 'survey/survey.html', context)
         else:  # ToDo Generate result form of the survey
-            def calculate_result(survey_id: int, session_key: str) -> int:
+            def calculate_result(survey_id: int, session_key: str):
                 survey_session = SurveySession.objects.get(session_key=session_key)
                 survey_questions = Question.objects.filter(questionare_id=survey_id)
                 user_answers = {}
                 question_correct_answers = {}
-                correct_count = 0
+                user_correct_answers_draft = {}
                 for survey_question in survey_questions:
                     tmp = Response.objects.filter(survey_session_id=survey_session.id, questionare_id=survey_id, question_id=survey_question.id)
                     user_answers[survey_question.id] = [value[0] for value in tmp.values_list('answer_id')]
@@ -205,18 +205,29 @@ def survey(request, id):
 
                     if survey_question.is_allow_multiple_answers:
                         if user_answers[survey_question.id] == question_correct_answers[survey_question.id]:
-                            correct_count += 1
+                            user_correct_answers_draft[survey_question.id] = user_answers[survey_question.id]
                     else:
                         user_answer = user_answers[survey_question.id][0]
                         if user_answer in question_correct_answers[survey_question.id]:
-                            correct_count += 1
+                            user_correct_answers_draft[survey_question.id] = user_answers[survey_question.id]
 
-                return correct_count
+                user_correct_answers = {}
+                for user_correct_answer_draft in user_correct_answers_draft:
+                    question = Question.objects.get(id=user_correct_answer_draft)
+                    answers = list()
+                    for answer_id in user_correct_answers_draft.get(user_correct_answer_draft):
+                        answer = Answer.objects.get(id=answer_id)
+                        answers.append(answer.answer_text)
+                    user_correct_answers[user_correct_answer_draft] = {'question' : question.text, 'answer' : answers}
 
+                return user_correct_answers
+
+            correct_answers = calculate_result(survey_id, request.session.session_key)
             context = {
                 'title': questionare.title,
                 'questions_number': questions_details['questions_number'],
-                'correct_answers': calculate_result(survey_id, request.session.session_key),
+                'number_correct_answers': len(correct_answers),
+                'correct_answers': correct_answers,
             }
             return render(request, 'survey/survey_user_result.html', context)
 

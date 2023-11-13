@@ -4,7 +4,17 @@
         <h2>Survey finished...</h2>
         <h3>Your results:</h3>
         <p>Total number questions is <strong>{{ questions_number }}</strong></p>
-        <p>Number of correct answers is <strong>{{ correct_answers }}</strong></p>
+        <p>Number of correct answers is <strong>{{ number_correct_answers }}</strong>:</p>
+        {% for key, value in correct_answers.items %}
+            <div>
+                <h5>Question: {{ value.question }}</h5>
+                <ul>
+                {% for answer in value.answer %}
+                    <li>{{ answer }}</li>
+                {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
         <hr>
         <a class="btn btn-success" href="{% url 'surveys' %}" role="button">Return to Surveys</a>
     </div>
