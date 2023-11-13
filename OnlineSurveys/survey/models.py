@@ -47,7 +47,7 @@ class Questionare(models.Model):
     
     def get_absolute_url(self):
         """
-        Returns the url to access a particular instance of Questionaire.
+        Returns the url to access a particular instance of Questionare.
         """
         return reverse('model-detail-view', args=[str(self.title)])
 

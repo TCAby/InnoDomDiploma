@@ -137,15 +137,11 @@ def survey(request, id):
         questionare = Questionare.objects.get(id=id)
         question = Question.objects.get(id=question_ids[questions_details['current_question'] - 1])
 
-        # ToDo
-        #if type(request.user) == 'django.utils.functional.SimpleLazyObject':
         current_user = request.user
-        if current_user is None:
+        if current_user is None or current_user.id is None:
             c_id = None
         else:
             c_id = current_user.id
-        #else:
-        #    current_user = None
 
         session, created = SurveySession.objects.get_or_create(
             session_key=request.session.session_key,
@@ -194,12 +190,36 @@ def survey(request, id):
                 'form': form,
                 'num_visits': num_visits,
             }
+            return render(request, 'survey/survey.html', context)
         else:  # ToDo Generate result form of the survey
+            def calculate_result(survey_id: int, session_key: str) -> int:
+                survey_session = SurveySession.objects.get(session_key=session_key)
+                survey_questions = Question.objects.filter(questionare_id=survey_id)
+                user_answers = {}
+                question_correct_answers = {}
+                correct_count = 0
+                for survey_question in survey_questions:
+                    tmp = Response.objects.filter(survey_session_id=survey_session.id, questionare_id=survey_id, question_id=survey_question.id)
+                    user_answers[survey_question.id] = [value[0] for value in tmp.values_list('answer_id')]
+                    question_correct_answers[survey_question.id] = [value[0] for value in Answer.objects.filter(question_id=survey_question.id, is_correct=1).values_list('id')]
+
+                    if survey_question.is_allow_multiple_answers:
+                        if user_answers[survey_question.id] == question_correct_answers[survey_question.id]:
+                            correct_count += 1
+                    else:
+                        user_answer = user_answers[survey_question.id][0]
+                        if user_answer in question_correct_answers[survey_question.id]:
+                            correct_count += 1
+
+                return correct_count
+
             context = {
-
+                'title': questionare.title,
+                'questions_number': questions_details['questions_number'],
+                'correct_answers': calculate_result(survey_id, request.session.session_key),
             }
+            return render(request, 'survey/survey_user_result.html', context)
 
-        return render(request, 'survey/survey.html', context)
 
 @login_required
 def questions(request):

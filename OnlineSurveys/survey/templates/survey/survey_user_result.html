@@ -1,0 +1,11 @@
+{% extends "survey/base_filling.html" %}
+{% block content %}
+    <div class="row">
+        <h2>Survey finished...</h2>
+        <h3>Your results:</h3>
+        <p>Total number questions is <strong>{{ questions_number }}</strong></p>
+        <p>Number of correct answers is <strong>{{ correct_answers }}</strong></p>
+        <hr>
+        <a class="btn btn-success" href="{% url 'surveys' %}" role="button">Return to Surveys</a>
+    </div>
+{% endblock content %}

@@ -43,7 +43,6 @@ def surveyuser_login(request: HttpRequest) -> HttpResponse:
                 if user.is_active:
                     login(request, user)
                     return redirect('/')
-                    #return HttpResponse('Authenticated successfully')
                 else:
                     return HttpResponse('Sorry, your account had been disabled')
             else:

@@ -39,12 +39,16 @@
                 </button>
                 <ul id="menu" class="list-group collapse show d-md-block">
                     <li class="list-group-item"><a href="/">Home page</a></li>
-                    <li class="list-group-item"><a href="/surveys">Surveys</a></li>
+                    <li class="list-group-item"><a href="{% url 'surveys' %}">Surveys</a></li>
                     {% if request.user.is_staff or request.user.is_superuser or request.user.role == "admin" %}
-                        <li class="list-group-item"><a href="/surveys/questions/">Questions</a></li>
+                        <li class="list-group-item"><a href="{% url 'questions' %}">Questions</a></li>
                         <li class="list-group-item"><a href="#">Users</a></li>
                     {% endif %}
-                    <li class="list-group-item"><a href="/accounts">My Profile</a></li>
+                    {% if request.user.id is not None %}
+                        <li class="list-group-item"><a href="/accounts">My Profile</a></li>
+                    {% else %}
+                        <li class="list-group-item"><a href="{% url 'login' %}">Login</a></li>
+                    {% endif %}
                 </ul>
             </div>
             <div class="col-lg-9 col-md-8 col-sm-6">

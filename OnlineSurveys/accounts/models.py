@@ -45,3 +45,4 @@ class SurveySession(models.Model):
     user = models.ForeignKey(SurveyUser, on_delete=models.CASCADE, null=True, blank=True)
     responses = models.ManyToManyField('survey.Response')
     session_key = models.CharField(max_length=100)
+    date_survey = models.DateTimeField(default=timezone.now)
