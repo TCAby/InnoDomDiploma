@@ -1,4 +1,22 @@
 {% extends "survey/base.html" %}
 {% block content %}
-
+    <div class="row">
+        <div class="col-sm-6 mb-3 mb-sm-6">
+            <p>In front of you is a system for creating and conducting online surveys.</p>
+            <h4>Features:</h4>
+            <ol>
+                <li>Unlimited number of surveys.<ol>
+                    <li>Each survey can have an activity status and is additionally controlled by the time frame of the
+            of the survey.</li>
+                    <li>Each survey can be available to everyone or only to registered users.</li>
+                    <li>For each survey, you can choose whether it is mandatory to answer each question, or if the respondent can skip some questions</li>
+                </ol></li>
+                <li>Each survey can have an unlimited number of questions.<ol>
+                    <li>Each question can have an unlimited number of answers</li>
+                    <li>Each question can have only one correct answer or multiple answers. In this case, the question is considered answered correctly either when all correct answers are selected or when one (any) of the correct answers is selected.</li>
+                </ol></li>
+            </ol>
+            In addition to the features available on the system's website, there is an API that allows you to run (conduct) surveys on your own website.
+        </div>
+    </div>
 {% endblock content %}
