@@ -57,17 +57,6 @@ class QuestionDetail(generics.RetrieveUpdateDestroyAPIView):
         return [permissions.IsAdminUser()]
 
 
-class ResponseList(generics.ListCreateAPIView):
-    authentication_classes = [authentication.TokenAuthentication]
-    queryset = Response.objects.all()
-    serializer_class = ResponseSerializer
-
-    def get_permissions(self):
-        if self.request.method == 'GET':
-            return [permissions.IsAuthenticatedOrReadOnly()]
-        return [permissions.IsAdminUser()]
-
-
 
 class QuestionDetail(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [authentication.TokenAuthentication]

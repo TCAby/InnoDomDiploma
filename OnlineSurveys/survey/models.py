@@ -74,6 +74,7 @@ class Answer(models.Model):
 
 
 class Response(models.Model):
+    # Fields
     user = models.ForeignKey('accounts.SurveyUser', on_delete=models.CASCADE, blank=True, null=True)
     questionare = models.ForeignKey(Questionare, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
