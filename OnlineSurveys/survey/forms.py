@@ -1,9 +1,7 @@
 from django import forms
-from django.forms import Form, ModelForm, TextInput
-from django.core.exceptions import ValidationError
-import datetime  # for checking renewal date range.
+from django.forms import Form, ModelForm
 from django.utils import timezone
-from .models import Questionare, Question, Answer, Response
+from .models import Questionare, Question, Response
 
 
 def prepare_value(value):

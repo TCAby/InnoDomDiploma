@@ -1,7 +1,7 @@
 from django import forms
-from django.forms import Form, ModelForm
+from django.forms import ModelForm
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm, AuthenticationForm
+from django.contrib.auth.forms import UserChangeForm
 from .models import SurveyUser
 
 

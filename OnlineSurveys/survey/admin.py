@@ -1,7 +1,5 @@
 from django.contrib import admin
-from django.urls import path
 from .models import Questionare, Question, Answer, Response
-from .views import home
 
 @admin.register(Questionare)
 class QuestionareAdmin(admin.ModelAdmin):

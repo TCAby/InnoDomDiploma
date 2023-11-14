@@ -1,9 +1,8 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render
 from django.contrib.auth.views import redirect_to_login
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseBadRequest
 from django.urls import reverse
 from django.db import transaction
-from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth.decorators import login_required
 import datetime
 
@@ -278,8 +277,6 @@ def add_question(request):
                 finally:
                     return HttpResponseRedirect(reverse(questions))
         else:
-            form.full_clean()
-            form_clean_data = form.cleaned_data
             return HttpResponse('We got your data', content_type='text/plain', status=201)
     else:
         form = AddQuestionForm(initial={'question': 'New question',})
