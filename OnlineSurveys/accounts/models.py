@@ -28,7 +28,6 @@ class SurveyUser(AbstractBaseUser, PermissionsMixin):
     )
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
 
     objects = SurveyUserManager()
 

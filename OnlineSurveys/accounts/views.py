@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import Group
-from django.http import HttpResponse, HttpRequest
+from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
 from django.urls import reverse_lazy
 from django.contrib.messages.views import SuccessMessageMixin
@@ -28,9 +28,9 @@ def surveyuser_register(request):
             return render(request, 'accounts/register_done.html', {'new_user': new_user})
         else:
             return render(request, 'accounts/register.html', {'user_form': user_form})
-    else:
-        user_form = SurveyUserRegistrationForm()
-        return render(request, 'accounts/register.html', {'user_form': user_form})
+
+    user_form = SurveyUserRegistrationForm()
+    return render(request, 'accounts/register.html', {'user_form': user_form})
 
 
 def surveyuser_login(request: HttpRequest) -> HttpResponse:
@@ -45,12 +45,9 @@ def surveyuser_login(request: HttpRequest) -> HttpResponse:
                     return redirect('/')
                 else:
                     return HttpResponse('Sorry, your account had been disabled')
-            else:
-                return HttpResponse('Invalid login/password')
-        else:
-            print(form.errors)
-    else:
-        form = SurveyUserLoginForm()
+            return HttpResponse('Invalid login/password')
+        return HttpResponseBadRequest(f'Error(s) appeared: {form.errors}')
+    form = SurveyUserLoginForm()
     return render(request, 'accounts/login.html', {'form': form})
 
 
