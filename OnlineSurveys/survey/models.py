@@ -5,9 +5,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from datetime import timedelta
 from django.urls import reverse
-#from accounts.models import SurveyUser, SurveySession
-
-# Create your models here.
 
 
 class Questionare(models.Model):
