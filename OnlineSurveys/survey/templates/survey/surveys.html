@@ -22,7 +22,10 @@
                 </div>
                 <div class="card-footer">
                     <div class="d-grid gap-2">
-                        <a href="/survey/{{ survey.id }}" class="btn btn-success" type="button">Start survey</a>
+                        {% if current_date|date > survey.date_upto|date or survey.activity_status != 'active' %}
+                        {% else %}
+                            <a href="/survey/{{ survey.id }}" class="btn btn-success" type="button">Start survey</a>
+                        {% endif %}
                     </div>                    
                 </div>
             </div>

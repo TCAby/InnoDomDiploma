@@ -21,6 +21,7 @@ def home(request):
 def surveys(request):
     context = {
         'title': 'List of Surveys',
+        'current_date': datetime.date.today(),
         'surveys': Questionare.objects.all(),
     }
     return render(request, 'survey/surveys.html', context)
@@ -89,16 +90,21 @@ def add_survey(request):
 
 
 def survey(request, id):
-    num_visits = request.session.get('num_visits', 0)
     if request.method == 'GET':
         try:
             questionare = Questionare.objects.get(id=id)
         except Questionare.DoesNotExist:
-            return HttpResponseNotFound(f"<h2>The survey (id={id}) not found</h2> Check URL or <a href='/surveys'>Return back</a>")
+            return HttpResponseNotFound(
+                f"<h2>The survey (id={id}) not found</h2> Check URL or <a href='/surveys'>Return back</a>")
 
         if not questionare.is_anonymous:
             if request.user.id is None:
                 return redirect_to_login(request.get_full_path(), login_url='/accounts/login/')
+
+        if datetime.date.today() > questionare.date_upto or questionare.activity_status != 'active':
+            return HttpResponseBadRequest(
+                f"<h2>The survey (id={id}) inactive or the cut-off date is less than today's date </h2> " +
+                f"Check URL or <a href='/surveys'>Return back</a>")
 
         questions = Question.objects.filter(questionare=questionare).order_by('?')
         numb_questions = questions.count()
@@ -110,7 +116,6 @@ def survey(request, id):
         context = {
             'title': questionare.title,
             'form': form,
-            'num_visits': num_visits,
         }
         return render(request, 'survey/survey.html', context)
     else:
@@ -176,7 +181,6 @@ def survey(request, id):
                 'progress': (int)((questions_details['current_question']+1) / questions_details['questions_number'] * 100),
                 'title': questionare.title,
                 'form': form,
-                'num_visits': num_visits,
             }
             return render(request, 'survey/survey.html', context)
         else:
@@ -231,8 +235,6 @@ def questions(request):
 
 @login_required
 def add_question(request):
-    num_visits = request.session.get('num_visits', 0)
-    # request.session['num_visits']=num_visits+1
     if request.method == 'POST':
         form = AddQuestionForm(request.POST)
         if form.is_valid():
@@ -288,15 +290,12 @@ def add_question(request):
         context = {
             'title': 'Add new question',
             'form': form,
-            'num_visits': num_visits,
         }
         return render(request, 'survey/add_question.html', context)
 
 
 @login_required
 def edit_question(request, id):
-    num_visits = request.session.get('num_visits', 0)
-    # request.session['num_visits']=num_visits+1
     try:
         question = Question.objects.get(id=id)
     except Question.DoesNotExist:
@@ -351,7 +350,6 @@ def edit_question(request, id):
             'title': 'Edit the question',
             'form': form,
             'answers': answers,
-            'num_visits': num_visits,
         }
         return render(request, 'survey/edit_question.html', context)
 
@@ -370,8 +368,6 @@ def remove_question(request, id):
 
 @login_required
 def answer(request):
-    num_visits = request.session.get('num_visits', 0)
-    # request.session['num_visits']=num_visits+1
     return HttpResponse('<h1>Answer</h1>')
 
 
