@@ -110,7 +110,8 @@ def survey(request, id):
             return HttpResponseNotFound(f"<h2>The survey (id={id}) not found</h2> Check URL or <a href='/surveys'>Return back</a>")
 
         if not questionare.is_anonymous:
-            return redirect_to_login(request.get_full_path(), login_url='/accounts/login/')
+            if request.user.id is None:
+                return redirect_to_login(request.get_full_path(), login_url='/accounts/login/')
 
         questions = Question.objects.filter(questionare=questionare).order_by('?')
         numb_questions = questions.count()
