@@ -5,6 +5,7 @@ from rest_framework.decorators import permission_classes, api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import JsonResponse
+import datetime
 
 from survey.models import Questionare, Question
 from .serializers import QuestionareSerializer, QuestionSerializer, ResponseSerializer
@@ -73,7 +74,21 @@ class SubmitSurveyResponseView(generics.CreateAPIView):
     serializer_class = ResponseSerializer
     permission_classes = [permissions.IsAdminUser]
 
+    def questionare_filling_validation(self, questionare_id: int) -> bool:
+        questionare = Questionare.objects.get(id=questionare_id)
+        if datetime.date.today() > questionare.date_upto or questionare.activity_status != 'active':
+            return False
+        else:
+            return True
+
     def create(self, request, *args, **kwargs):
+        # Perform validation on related questionare fields
+        questionare_id = request.data.get('questionare')
+
+        if not self.questionare_filling_validation(questionare_id):
+            return Response({"error": "Validation failed for questionare fields"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
