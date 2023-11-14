@@ -191,7 +191,7 @@ def survey(request, id):
                 'num_visits': num_visits,
             }
             return render(request, 'survey/survey.html', context)
-        else:  # ToDo Generate result form of the survey
+        else:
             def calculate_result(survey_id: int, session_key: str):
                 survey_session = SurveySession.objects.get(session_key=session_key)
                 survey_questions = Question.objects.filter(questionare_id=survey_id)

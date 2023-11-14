@@ -33,7 +33,7 @@ class SurveyUser(AbstractBaseUser, PermissionsMixin):
 
     objects = SurveyUserManager()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.email
 
 class UserProfile(models.Model):
