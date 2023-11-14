@@ -23,13 +23,6 @@ class QuestionSerializer(serializers.ModelSerializer):
         fields = ['id', 'text', 'is_allow_multiple_answers', 'questionare']
 
 
-class AnswerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Answer
-        fields = ['id', 'answer_text', 'is_correct', 'question']
-
-
-
 class ResponseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Response
