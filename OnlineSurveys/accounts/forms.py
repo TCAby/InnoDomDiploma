@@ -6,7 +6,6 @@ from .models import SurveyUser
 
 
 class SurveyUserRegistrationForm(ModelForm):
-# class SurveyUserRegistrationForm(UserCreationForm):
     first_name = forms.CharField(max_length=50, required=True, label='Name')
     email = forms.EmailField(max_length=50, required=True)
     password = forms.CharField(label='Password', widget=forms.PasswordInput)
@@ -15,7 +14,6 @@ class SurveyUserRegistrationForm(ModelForm):
     class Meta:
         model = SurveyUser
         fields = ('first_name', 'email', 'password', 'password2', )
-        # fields = ('first_name', 'email', )
 
 
     def clean_password2(self):
