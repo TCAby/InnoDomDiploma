@@ -13,30 +13,21 @@ from accounts.models import SurveySession
 
 
 def home(request):
-    num_visits = request.session.get('num_visits', 0)
-    request.session['num_visits']=num_visits+1
     context = {
         'title': 'Short introduction',
-        'num_visits': num_visits
     }
     return render(request, 'survey/home.html', context)
 
 def surveys(request):
-    # Number of visits to this view, as counted in the session variable.
-    num_visits = request.session.get('num_visits', 0)
-    # request.session['num_visits']=num_visits+1
     context = {
         'title': 'List of Surveys',
         'surveys': Questionare.objects.all(),
-        'num_visits': num_visits
     }
     return render(request, 'survey/surveys.html', context)
 
 
 @login_required
 def edit_survey(request, id):
-    num_visits = request.session.get('num_visits', 0)
-    # request.session['num_visits']=num_visits+1
 
     try:
         questionare = Questionare.objects.get(id=id)
@@ -61,7 +52,6 @@ def edit_survey(request, id):
         context = {
             'title': 'Edit survey',
             'form': form,
-            'num_visits': num_visits,
         }
         return render(request, 'survey/edit_survey.html', context)
 
@@ -80,8 +70,6 @@ def remove_survey(request, id):
 
 @login_required
 def add_survey(request):
-    num_visits = request.session.get('num_visits', 0)
-    # request.session['num_visits']=num_visits+1
     if request.method == 'POST':
         form = AddSurveyForm(request.POST)
         if form.is_valid():
@@ -96,7 +84,6 @@ def add_survey(request):
         context = {
             'title': 'Add new survey',
             'form': form,
-            'num_visits': num_visits,
         }
         return render(request, 'survey/add_survey.html', context)    
 
@@ -235,12 +222,9 @@ def survey(request, id):
 
 @login_required
 def questions(request):
-    num_visits = request.session.get('num_visits', 0)
-    # request.session['num_visits']=num_visits+1
     context = {
         'title': 'List of Questions',
         'questions': Question.objects.all(),
-        'num_visits': num_visits
     }
     return render(request, 'survey/questions.html', context)
 

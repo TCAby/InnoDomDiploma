@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import Group
 from django.http import HttpResponse, HttpRequest
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
@@ -52,6 +52,11 @@ def surveyuser_login(request: HttpRequest) -> HttpResponse:
     else:
         form = SurveyUserLoginForm()
     return render(request, 'accounts/login.html', {'form': form})
+
+
+def surveyuser_logout(request):
+    logout(request)
+    return redirect('/')
 
 
 @login_required
