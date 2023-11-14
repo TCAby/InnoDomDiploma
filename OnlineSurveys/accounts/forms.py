@@ -9,18 +9,18 @@ class SurveyUserRegistrationForm(ModelForm):
     first_name = forms.CharField(max_length=50, required=True, label='Name')
     email = forms.EmailField(max_length=50, required=True)
     password = forms.CharField(label='Password', widget=forms.PasswordInput)
-    repeat_password = forms.CharField(label='Repeat password', widget=forms.PasswordInput)
+    password2 = forms.CharField(label='Repeat password', widget=forms.PasswordInput)
 
     class Meta:
         model = SurveyUser
-        fields = ('first_name', 'email', 'password', 'repeat_password', )
+        fields = ('first_name', 'email', 'password', 'password2', )
 
 
-    def clean_password(self):
+    def clean_password2(self):
         cd = self.cleaned_data
-        if cd['password'] != cd['repeat_password']:
+        if cd['password'] != cd['password2']:
             raise forms.ValidationError('Passwords don\'t match.')
-        return cd['repeat_password']
+        return cd['password2']
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -34,17 +34,17 @@ class SurveyUserProfileForm(UserChangeForm):
     first_name = forms.CharField(max_length=50, required=True, label='Name')
     email = forms.EmailField(max_length=50, required=True)
     password = forms.CharField(label='Password', widget=forms.PasswordInput)
-    repeat_password = forms.CharField(label='Repeat password', widget=forms.PasswordInput)
+    password2 = forms.CharField(label='Repeat password', widget=forms.PasswordInput)
 
     class Meta:
         model = SurveyUser
-        fields = ('first_name', 'email', 'password', 'repeat_password', )
+        fields = ('first_name', 'email', 'password', 'password2', )
 
-    def clean_password(self):
+    def clean_password2(self):
         cd = self.cleaned_data
-        if cd['password'] != cd['repeat_password']:
+        if cd['password'] != cd['password2']:
             raise forms.ValidationError('Passwords don\'t match.')
-        return cd['repeat_password']
+        return cd['password2']
 
 
 class SurveyUserLoginForm(forms.Form):

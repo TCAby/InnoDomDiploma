@@ -21,7 +21,7 @@ class SurveyUserAdmin(UserAdmin):
         (None, {
             "classes": ("wide",),
             "fields": (
-                "email", "password", "repeat_password", "is_staff", "is_active"
+                "email", "password", "password2", "is_staff", "is_active"
             )}
          ),
     )
