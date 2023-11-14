@@ -29,7 +29,6 @@ def surveys(request):
 
 @login_required
 def edit_survey(request, id):
-
     try:
         questionare = Questionare.objects.get(id=id)
     except Questionare.DoesNotExist:
@@ -76,17 +75,14 @@ def add_survey(request):
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse(surveys))
-        else:
-            form.full_clean()
-            form_clean_data = form.cleaned_data
-            return HttpResponse('We got your data', content_type='text/plain', status=201)
-    else:
-        form = AddSurveyForm(initial={'title': 'New survey', 'date_from': datetime.datetime.today(), 'date_upto': datetime.datetime.today() + datetime.timedelta(days=1)})
-        context = {
-            'title': 'Add new survey',
-            'form': form,
-        }
-        return render(request, 'survey/add_survey.html', context)    
+        return HttpResponse('We got your data', content_type='text/plain', status=201)
+
+    form = AddSurveyForm(initial={'title': 'New survey', 'date_from': datetime.datetime.today(), 'date_upto': datetime.datetime.today() + datetime.timedelta(days=1)})
+    context = {
+        'title': 'Add new survey',
+        'form': form,
+    }
+    return render(request, 'survey/add_survey.html', context)
 
 
 def survey(request, id):

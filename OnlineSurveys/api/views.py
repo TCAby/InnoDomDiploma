@@ -1,15 +1,9 @@
-from django.shortcuts import render
-from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from rest_framework import generics, permissions, authentication, status
-from rest_framework.decorators import permission_classes, api_view
-from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.http import JsonResponse
 import datetime
 
 from survey.models import Questionare, Question
 from .serializers import QuestionareSerializer, QuestionSerializer, ResponseSerializer
-from accounts.models import SurveyUser
 
 
 class QuestionareList(generics.ListCreateAPIView):
