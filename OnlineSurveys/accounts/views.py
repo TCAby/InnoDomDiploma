@@ -95,3 +95,11 @@ class UserPasswordResetConfirmView(SuccessMessageMixin, PasswordResetConfirmView
         context = super().get_context_data(**kwargs)
         context['title'] = 'Create a new password'
         return context
+
+
+@login_required
+def users(request):
+    context = {
+        'users': SurveyUser.objects.all(),
+    }
+    return render(request, 'accounts/users.html', context)

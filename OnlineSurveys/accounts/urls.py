@@ -5,6 +5,7 @@ from .views import UserForgotPasswordView, UserPasswordResetConfirmView
 
 urlpatterns = [
     path('', views.surveyuser_profile, name='profile'),
+    path('users/', views.users, name='users'),
     path('login/', views.surveyuser_login, name='login'),
     #path('logout/', views.surveyuser_logout, name='login'),
     path('create/', views.surveyuser_register, name='register'),

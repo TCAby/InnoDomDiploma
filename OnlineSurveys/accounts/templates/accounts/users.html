@@ -1,0 +1,24 @@
+{% extends "accounts/base_logged.html" %}
+
+{% block title %}Registered users:{% endblock %}
+
+{% block content %}
+    <div class="row">
+    {% for user in users %}
+        <div class="col-sm-6 mb-3 mb-sm-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ user.first_name }} {{ user.last_name }}</h5>
+                    <div class="card-text">
+                        <p class="text-body-secondary"><em>e-mail: <strong>{{ user.email }}</strong></em></p>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <span>Registered at {{ user.date_joined }}</span>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+
+{% endblock %}
