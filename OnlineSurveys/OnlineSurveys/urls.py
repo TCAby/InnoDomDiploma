@@ -19,16 +19,13 @@ from django.urls import path, include
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.views.generic.base import RedirectView
 
-#from survey.views import survey
-#from survey.views import question
-#from survey.views import redirect_view
-
 
 urlpatterns = [
     path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('images/favicon.ico'))),
     path('', include('survey.urls')),
     path('surveys/', include('survey.urls')),
     path('accounts/', include('accounts.urls')),
+    path('api/', include('api.urls')),
     path('admin/', admin.site.urls),
 ]
 

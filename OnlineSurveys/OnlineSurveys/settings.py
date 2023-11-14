@@ -44,6 +44,8 @@ INSTALLED_APPS = [
 INSTALLED_APPS += [
     'accounts',
     'survey',
+    'rest_framework',
+    'api',
 ]   # custom Apps
 
 SITE_ID = 1
