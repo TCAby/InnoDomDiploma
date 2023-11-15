@@ -17,6 +17,7 @@ def home(request):
     }
     return render(request, 'survey/home.html', context)
 
+
 def surveys(request):
     context = {
         'title': 'List of Surveys',
@@ -27,7 +28,7 @@ def surveys(request):
 
 
 @login_required
-def edit_survey(request, id):
+def edit_survey(request, id:int):
     try:
         questionare = Questionare.objects.get(id=id)
     except Questionare.DoesNotExist:
@@ -56,7 +57,7 @@ def edit_survey(request, id):
 
 
 @login_required
-def remove_survey(request, id):
+def remove_survey(request, id:int):
     try:
         survey = Questionare.objects.get(id=id)
         # FixMe ToDo Add question-confirmation before delete
@@ -84,7 +85,7 @@ def add_survey(request):
     return render(request, 'survey/add_survey.html', context)
 
 
-def survey(request, id):
+def survey(request, id:int):
     if request.method == 'GET':
         try:
             questionare = Questionare.objects.get(id=id)
@@ -288,7 +289,7 @@ def add_question(request):
 
 
 @login_required
-def edit_question(request, id):
+def edit_question(request, id:int):
     try:
         question = Question.objects.get(id=id)
     except Question.DoesNotExist:
@@ -348,7 +349,7 @@ def edit_question(request, id):
 
 
 @login_required
-def remove_question(request, id):
+def remove_question(request, id:int):
     try:
         question = Question.objects.get(id=id)
         # FixMe ToDo Add question-confirmation before delete

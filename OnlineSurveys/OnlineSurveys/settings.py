@@ -28,7 +28,7 @@ SECRET_KEY = "django-insecure-fef-)ij$d21wl2z^ubk-jqw&66$cav2^-9mv3f1wpx06cye$yk
 DEBUG = True
 
 # Hosts definition
-ALLOWED_HOSTS = ['127.0.0.1', '.pythonanywhere.com']
+ALLOWED_HOSTS = ['127.0.0.1', '.pythonanywhere.com', '*']
 
 # Application definition
 INSTALLED_APPS = [
@@ -127,6 +127,8 @@ TIME_ZONE = "Europe/Minsk"
 
 USE_I18N = True
 
+USE_L10N = True
+
 USE_TZ = True
 
 
@@ -152,6 +154,6 @@ EMAIL_HOST_USER = '8748a4ea2ce158'
 EMAIL_HOST_PASSWORD = '84e6484f945198'
 EMAIL_PORT = '2525'
 
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-SESSION_COOKIE_AGE = 30
-SESSION_SAVE_EVERY_REQUEST = True
+#SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+#SESSION_COOKIE_AGE = 30
+#SESSION_SAVE_EVERY_REQUEST = True
