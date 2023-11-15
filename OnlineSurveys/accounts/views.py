@@ -12,7 +12,7 @@ from .forms import SurveyUserRegistrationForm, SurveyUserLoginForm
 from .forms import UserForgotPasswordForm, UserSetNewPasswordForm
 
 
-def surveyuser_register(request):
+def surveyuser_register(request) -> HttpResponse:
     if request.method == 'POST':
         user_form = SurveyUserRegistrationForm(request.POST)
         if user_form.is_valid():
@@ -57,7 +57,7 @@ def surveyuser_logout(request):
 
 
 @login_required
-def surveyuser_profile(request):
+def surveyuser_profile(request) -> HttpResponse:
     user = request.user
     try:
         profile = user.userprofile
@@ -67,7 +67,7 @@ def surveyuser_profile(request):
 
 
 @login_required
-def admin_dashboard(request):
+def admin_dashboard(request) -> HttpResponse:
     if request.user.role != 'admin':
         return redirect('survey/home')
     return render(request, 'accounts/admin_dashboard.html')
@@ -100,7 +100,7 @@ class UserPasswordResetConfirmView(SuccessMessageMixin, PasswordResetConfirmView
 
 
 @login_required
-def users(request):
+def users(request) -> HttpResponse:
     context = {
         'users': SurveyUser.objects.all(),
     }
