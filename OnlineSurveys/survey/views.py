@@ -296,25 +296,48 @@ def edit_question(request, id:int):
         return HttpResponseNotFound(
             f"<h2>Question (id={id}) not found</h2> <a href='/surveys/questions/'>Return back</a>")
 
+    def verify_existed_answers_list(existed_answers:dict, new_answers_ids:list):
+        """Compares the list of saved responses to the list of response IDs in the new list.
+        If this answer is no longer in the new list, it is deleted.
+
+        Keyword arguments:
+            existed_answers:QuerySet    - items of the Answer Model
+            new_answers_ids:list        - list of ids from the form (elements with name="answer_id[]")
+
+        """
+        for answer in existed_answers:
+            if str(answer.id) not in new_answers_ids:
+                answer.delete()
+
+    def mark_correct_answers(answers:dict, list_correct_answers:list) -> dict:
+        """Combines a list of answers and a list of marks for correct answers.
+
+        Keyword arguments:
+            answers:dict                - result of request.POST.getlist
+            list_correct_answers:list   - result of request.POST.getlist
+        """
+        i = 0
+        for is_correct in enumerate(list_correct_answers):
+            if is_correct[1] == 'on':
+                if i == 0:
+                    answers[i] = (answers[i][0], True)
+                else:
+                    answers[i - 1] = (answers[i - 1][0], True)
+            else:
+                i += 1
+
+        return answers
+
     if request.method == 'POST':
         form = EditQuestionForm(request.POST, instance=question)
         if form.is_valid():
             form.save()
             existed_answers = Answer.objects.filter(question=question)
-            answers = [(x, False) for x in request.POST.getlist('answer[]')]
             answers_ids = request.POST.getlist('answer_id[]')
-            for ex_ans in existed_answers:
-                if str(ex_ans.id) not in answers_ids:
-                    ex_ans.delete()
-            i = 0
-            for is_correct in enumerate(request.POST.getlist('is_correct_answer[]')):
-                if is_correct[1] == 'on':
-                    if i == 0:
-                        answers[i] = (answers[i][0], True)
-                    else:
-                        answers[i-1] = (answers[i-1][0], True)
-                else:
-                    i += 1
+            verify_existed_answers_list(existed_answers, answers_ids)
+
+            answers = [(x, False) for x in request.POST.getlist('answer[]')]
+            answers = mark_correct_answers(answers,request.POST.getlist('is_correct_answer[]'))
 
             i = 0
             for ans in answers:
@@ -349,7 +372,7 @@ def edit_question(request, id:int):
 
 
 @login_required
-def remove_question(request, id:int):
+def remove_question(request, id:int) -> HttpResponse:
     try:
         question = Question.objects.get(id=id)
         # FixMe ToDo Add question-confirmation before delete
@@ -358,10 +381,4 @@ def remove_question(request, id:int):
         return HttpResponseNotFound(f"<h2>Question (id={id}) not found</h2>")
     else:
         return HttpResponseRedirect(reverse(questions))
-
-
-@login_required
-def answer(request):
-    return HttpResponse('<h1>Answer</h1>')
-
 

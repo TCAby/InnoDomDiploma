@@ -12,7 +12,6 @@ urlpatterns = [
     path('surveys/questions/add/', views.add_question, name="add-question"),
     path('surveys/questions/edit/<int:id>/', views.edit_question, name="edit-question"),
     path('surveys/questions/remove/<int:id>/', views.remove_question, name="remove-question"),
-    path('answer/', views.answer, name="answer"),
     # Redirects typical /admin URLs to the customs
     re_path(r'^admin/survey/questionnaire/(?P<questionnaire_id>\d+)/change/$', views.edit_survey),
     re_path(r'^admin/survey/questionare/$', views.surveys),
