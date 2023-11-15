@@ -40,7 +40,7 @@ class SurveyUserProfileForm(UserChangeForm):
         model = SurveyUser
         fields = ('first_name', 'email', 'password', 'password2', )
 
-    def clean_password2(self):
+    def clean_password2(self) -> str:
         cd = self.cleaned_data
         if cd['password'] != cd['password2']:
             raise forms.ValidationError('Passwords don\'t match.')
