@@ -3,6 +3,7 @@ from rest_framework.response import Response
 import datetime
 
 from survey.models import Questionare, Question
+from survey.managers import SurveyManager
 from .serializers import QuestionareSerializer, QuestionSerializer, ResponseSerializer
 
 
@@ -56,19 +57,24 @@ class SubmitSurveyResponseView(generics.CreateAPIView):
     serializer_class = ResponseSerializer
     permission_classes = [permissions.IsAdminUser]
 
-    def questionare_filling_validation(self, questionare_id: int) -> bool:
-        questionare = Questionare.objects.get(id=questionare_id)
-        if datetime.date.today() > questionare.date_upto or questionare.activity_status != 'active':
-            return False
-        else:
-            return True
+    @staticmethod
+    def questionare_permission_validation(questionare_id: int) -> bool:
+        return Questionare.objects.is_status_daterange_actual(id=questionare_id)
+
+    def questionare_filling_validation(self, response) -> bool:
+        return False
 
     def create(self, request, *args, **kwargs):
         # Perform validation on related questionare fields
         questionare_id = request.data.get('questionare')
 
-        if not self.questionare_filling_validation(questionare_id):
-            return Response({"error": "Validation failed for questionare fields"},
+        if not self.questionare_permission_validation(questionare_id):
+            return Response({"error": "Validation failed for questionare (status or date range incorrect)"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if not self.questionare_filling_validation(request.data):
+            return Response({"error": "Validation failed for questionare fields",
+                             'details':request.data},
                             status=status.HTTP_400_BAD_REQUEST)
 
         serializer = self.get_serializer(data=request.data)

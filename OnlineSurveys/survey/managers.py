@@ -14,7 +14,7 @@ class SurveyManager(models.Manager):
             date_upto__gte=date_today
         )
 
-    def is_daterange_actual(self, id:int) -> bool:
+    def is_status_daterange_actual(self, id:int) -> bool:
         date_today = datetime.date.today()
         return self.filter(
             id=id,
