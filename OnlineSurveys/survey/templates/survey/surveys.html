@@ -22,11 +22,16 @@
                 </div>
                 <div class="card-footer">
                     <div class="d-grid gap-2">
-                        {% if current_date|date > survey.date_upto|date or survey.activity_status != 'active' %}
+                        {% if survey.activity_status != 'active' %}
+                            <h4>Sorry, Survey's status is not Active </h4>
+                        {% elif survey.is_early %}
+                            <h4>Sorry, it's too soon</h4>
+                        {% elif survey.is_past_due %}
+                            <h4>Sorry, You're too late</h4>
                         {% else %}
                             <a href="/survey/{{ survey.id }}" class="btn btn-success" type="button">Start survey</a>
                         {% endif %}
-                    </div>                    
+                    </div>
                 </div>
             </div>
         </div>        
