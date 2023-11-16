@@ -3,7 +3,7 @@ from rest_framework.response import Response
 import datetime
 
 from survey.models import Questionare, Question
-from survey.managers import SurveyManager
+from accounts.models import SurveyUser
 from .serializers import QuestionareSerializer, QuestionSerializer, ResponseSerializer
 
 
@@ -50,7 +50,7 @@ class QuestionDetail(generics.RetrieveUpdateDestroyAPIView):
     def get_permissions(self):
         if self.request.method == 'GET':
             return [permissions.IsAuthenticatedOrReadOnly()]
-        return [permissions.IsAdminUser()]
+        return [permissions.IsAuthenticated()]
 
 
 class SubmitSurveyResponseView(generics.CreateAPIView):
@@ -96,4 +96,3 @@ class SubmitSurveyResponseView(generics.CreateAPIView):
         #   "answer": 1
         # }
         # This will submit a response to question 1 of survey 1 with answer 1.
-

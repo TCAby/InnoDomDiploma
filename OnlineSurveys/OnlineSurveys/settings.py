@@ -45,6 +45,7 @@ INSTALLED_APPS += [
     'accounts',
     'survey',
     'rest_framework',
+    'rest_framework.authtoken',
     'api',
 ]   # custom Apps
 
@@ -157,3 +158,10 @@ EMAIL_PORT = '2525'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 30
 SESSION_SAVE_EVERY_REQUEST = True
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+}
