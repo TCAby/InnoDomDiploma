@@ -61,6 +61,11 @@ class Questionare(models.Model):
     def is_early(self) -> bool:
         return datetime.date.today() < self.date_from
 
+    @property
+    def is_status_daterange_actual(self) -> bool:
+        date_today = datetime.date.today()
+        return self.is_active and not (self.is_past_due and self.is_early)
+
 
 class Question(models.Model):
     # Fields
