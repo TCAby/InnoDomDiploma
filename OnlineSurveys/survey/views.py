@@ -8,7 +8,7 @@ import datetime
 
 from .models import Questionare, Question, Answer, Response
 from .forms import AddSurveyForm, AddQuestionForm, EditSurveyForm, EditQuestionForm, FillSurveyForm
-from accounts.models import SurveySession
+from accounts.models import SurveySession, SurveyUser
 
 
 def home(request):
@@ -22,7 +22,7 @@ def surveys(request):
     context = {
         'title': 'List of Surveys',
         'current_date': datetime.date.today(),
-        'surveys': Questionare.objects.all(),
+        'surveys': Questionare.objects.all() if request.user.is_staff else Questionare.objects.active(),
     }
     return render(request, 'survey/surveys.html', context)
 

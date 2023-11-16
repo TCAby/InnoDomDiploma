@@ -3,6 +3,8 @@ import datetime
 from django.db import models
 from django.urls import reverse
 
+from .managers import SurveyManager
+
 
 class Questionare(models.Model):
     """Class represent top level of Survey
@@ -27,6 +29,8 @@ class Questionare(models.Model):
     date_upto = models.DateField(default=datetime.date.today() + datetime.timedelta(days=1), verbose_name="Date finish", help_text="Date, where the survey will be finished")
     is_anonymous = models.BooleanField(verbose_name='Allow Anonymous', default=True)
     must_answers = models.BooleanField(verbose_name='Is all answers mandatory', default=True)
+
+    objects = SurveyManager()
 
     # Metadata
     class Meta:
