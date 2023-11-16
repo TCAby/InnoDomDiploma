@@ -50,15 +50,15 @@ class Questionare(models.Model):
         return reverse('model-detail-view', args=[str(self.title)])
 
     @property
-    def is_active(self):
+    def is_active(self) -> bool:
         return self.activity_status == 'active'
 
     @property
-    def is_past_due(self):
+    def is_past_due(self) -> bool:
         return datetime.date.today() > self.date_upto
 
     @property
-    def is_early(self):
+    def is_early(self) -> bool:
         return datetime.date.today() < self.date_from
 
 
