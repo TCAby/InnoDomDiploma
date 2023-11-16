@@ -61,8 +61,13 @@ class SubmitSurveyResponseView(generics.CreateAPIView):
     def questionare_permission_validation(questionare_id: int) -> bool:
         return Questionare.objects.is_status_daterange_actual(id=questionare_id)
 
-    def questionare_filling_validation(self, response) -> bool:
-        return False
+    @staticmethod
+    def questionare_filling_validation(response) -> bool:
+        keys = ['questionare', 'question', 'answer']
+        validation = all(key in response for key in keys)
+        validation = validation and all(value.isdigit() for value in response.values())
+
+        return validation
 
     def create(self, request, *args, **kwargs):
         # Perform validation on related questionare fields
