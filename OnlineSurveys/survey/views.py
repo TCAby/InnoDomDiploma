@@ -1,24 +1,35 @@
+""" Management of the heart of the project"""
+import datetime
 from django.shortcuts import render
 from django.contrib.auth.views import redirect_to_login
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseBadRequest
 from django.urls import reverse
 from django.db import transaction
 from django.contrib.auth.decorators import login_required
-import datetime
 
 from .models import Questionare, Question, Answer, Response
 from .forms import AddSurveyForm, AddQuestionForm, EditSurveyForm, EditQuestionForm, FillSurveyForm
 from accounts.models import SurveySession, SurveyUser
 
 
-def home(request):
+def home(request) -> HttpResponse:
+    """
+    Outputs static introduction of the project
+    :param request:
+    :return:
+    """
     context = {
         'title': 'Short introduction',
     }
     return render(request, 'survey/home.html', context)
 
 
-def surveys(request):
+def surveys(request) -> HttpResponse:
+    """
+    List of surveys, depends on user rights
+    :param request:
+    :return:
+    """
     context = {
         'title': 'List of Surveys',
         'current_date': datetime.date.today(),
@@ -28,7 +39,13 @@ def surveys(request):
 
 
 @login_required
-def edit_survey(request, id:int):
+def edit_survey(request, id:int) -> HttpResponse:
+    """
+
+    :param request:
+    :param id:
+    :return:
+    """
     try:
         questionare = Questionare.objects.get(id=id)
     except Questionare.DoesNotExist:
@@ -46,7 +63,7 @@ def edit_survey(request, id:int):
             for question in selected_questions:
                 question.questionare = None
                 question.save()
-            return HttpResponse(f"<h2>Edit done!</h2> <a href='/surveys'>Return back</a>")
+            return HttpResponseRedirect(reverse(surveys))
     else:
         form = EditSurveyForm(instance=questionare)
         context = {
@@ -57,7 +74,13 @@ def edit_survey(request, id:int):
 
 
 @login_required
-def remove_survey(request, id:int):
+def remove_survey(request, id:int) -> HttpResponse:
+    """
+
+    :param request:
+    :param id:
+    :return:
+    """
     try:
         survey = Questionare.objects.get(id=id)
         # FixMe ToDo Add question-confirmation before delete
@@ -69,7 +92,12 @@ def remove_survey(request, id:int):
 
 
 @login_required
-def add_survey(request):
+def add_survey(request) -> HttpResponse:
+    """
+
+    :param request:
+    :return:
+    """
     if request.method == 'POST':
         form = AddSurveyForm(request.POST)
         if form.is_valid():
@@ -85,7 +113,13 @@ def add_survey(request):
     return render(request, 'survey/add_survey.html', context)
 
 
-def survey(request, id:int):
+def survey(request, id:int) -> HttpResponse:
+    """
+
+    :param request:
+    :param id:
+    :return:
+    """
     if request.method == 'GET':
         try:
             questionare = Questionare.objects.get(id=id)
@@ -97,16 +131,16 @@ def survey(request, id:int):
             if request.user.id is None:
                 return redirect_to_login(request.get_full_path(), login_url='/accounts/login/')
 
-        if datetime.date.today() > questionare.date_upto or questionare.activity_status != 'active':
+        if not questionare.is_status_daterange_actual:
             return HttpResponseBadRequest(
                 f"<h2>The survey (id={id}) inactive or the cut-off date is less than today's date </h2> " +
-                f"Check URL or <a href='/surveys'>Return back</a>")
+                f"Check URL or <a href='/surveys'>Return back</a>"
+            )
 
-        questions = Question.objects.filter(questionare=questionare).order_by('?')
-        numb_questions = questions.count()
+        tmp_questions = Question.objects.filter(questionare=questionare).order_by('?')
         request.session['survey'] = id
-        request.session['questions'] = [q.id for q in questions]
-        request.session['questions_details'] = {'current_question': 0, 'questions_number': numb_questions}
+        request.session['questions'] = [q.id for q in tmp_questions]
+        request.session['questions_details'] = {'current_question': 0, 'questions_number': tmp_questions.count()}
 
         form = FillSurveyForm(initial={'questionare': questionare,})
         context = {
@@ -128,33 +162,26 @@ def survey(request, id:int):
 
         current_user = request.user
         if current_user is None or current_user.id is None:
-            c_id = None
+            current_user_id = None
         else:
-            c_id = current_user.id
+            current_user_id = current_user.id
 
         session, created = SurveySession.objects.get_or_create(
             session_key=request.session.session_key,
-            user_id=c_id
+            user_id=current_user_id
         )
         session.save()
 
         for answer_id in answer_ids:
-            if c_id is None:
-                response = Response.objects.create(
-                    questionare=questionare,
-                    question=question,
-                    answer=Answer.objects.get(id=answer_id),
-                    survey_session=session
-                )
-            else:
-                response = Response.objects.create(
-                    user=current_user,
-                    questionare=questionare,
-                    question=question,
-                    answer=Answer.objects.get(id=answer_id),
-                    survey_session=session
-                )
-            response.save()
+            response = Response.objects.create(
+                questionare=questionare,
+                question=question,
+                answer=Answer.objects.get(id=answer_id),
+                survey_session=session
+            )
+            if current_user_id is not None:
+                response.user=current_user
+                response.save(update_fields=["user"])
 
         if questionare.must_answers:
             if questions_details['current_question'] >= 0:
@@ -180,16 +207,26 @@ def survey(request, id:int):
             }
             return render(request, 'survey/survey.html', context)
         else:
-            def calculate_result(survey_id: int, session_key: str):
+            def calculate_result(survey_id: int, session_key: str) -> dict:
+                """
+                Creates a dictionary from the questions of the survey and correct answers received,
+                like {'question': question.text, 'answer': answers}
+
+                :param survey_id:
+                :param session_key:
+                :return: dictionary
+                """
                 survey_session = SurveySession.objects.get(session_key=session_key)
                 survey_questions = Question.objects.filter(questionare_id=survey_id)
                 user_answers = {}
                 question_correct_answers = {}
                 user_correct_answers_draft = {}
                 for survey_question in survey_questions:
-                    tmp = Response.objects.filter(survey_session_id=survey_session.id, questionare_id=survey_id, question_id=survey_question.id)
+                    tmp = Response.objects.filter(survey_session_id=survey_session.id, questionare_id=survey_id,
+                                                  question_id=survey_question.id)
                     user_answers[survey_question.id] = [value[0] for value in tmp.values_list('answer_id')]
-                    question_correct_answers[survey_question.id] = [value[0] for value in Answer.objects.filter(question_id=survey_question.id, is_correct=1).values_list('id')]
+                    question_correct_answers[survey_question.id] = [value[0] for value in Answer.objects.filter(
+                        question_id=survey_question.id, is_correct=1).values_list('id')]
 
                     if survey_question.is_allow_multiple_answers:
                         if user_answers[survey_question.id] == question_correct_answers[survey_question.id]:
@@ -206,7 +243,7 @@ def survey(request, id:int):
                     for answer_id in user_correct_answers_draft.get(user_correct_answer_draft):
                         answer = Answer.objects.get(id=answer_id)
                         answers.append(answer.answer_text)
-                    user_correct_answers[user_correct_answer_draft] = {'question' : question.text, 'answer' : answers}
+                    user_correct_answers[user_correct_answer_draft] = {'question': question.text, 'answer': answers}
 
                 return user_correct_answers
 
