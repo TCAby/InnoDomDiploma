@@ -26,7 +26,7 @@ class QuestionareDetail(generics.RetrieveUpdateDestroyAPIView):
     def get_permissions(self):
         if self.request.method == 'GET':
             return [permissions.IsAuthenticatedOrReadOnly()]
-        return [permissions.IsAdminUser()]
+        return [permissions.IsAuthenticated()]
 
 
 
@@ -55,7 +55,7 @@ class QuestionDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class SubmitSurveyResponseView(generics.CreateAPIView):
     serializer_class = ResponseSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     @staticmethod
     def questionare_permission_validation(questionare_id: int) -> bool:
