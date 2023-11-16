@@ -186,7 +186,8 @@ def survey(request, id:int) -> HttpResponse:
         if questionare.must_answers:
             if questions_details['current_question'] >= 0:
                 if len(answer_ids) > 0:
-                    request.session['questions_details'] = {'current_question': questions_details['current_question'] + 1, 'questions_number': questions_details['questions_number']}
+                    request.session['questions_details'] = {'current_question': questions_details['current_question'] + 1,
+                                                            'questions_number': questions_details['questions_number']}
                     questions_details = request.session.get('questions_details')
         else:
             request.session['questions_details'] = {'current_question': questions_details['current_question'] + 1,
@@ -201,7 +202,7 @@ def survey(request, id:int) -> HttpResponse:
                 'question': question,
                 'answers': answers,
                 'question_details': questions_details,
-                'progress': (int)((questions_details['current_question']+1) / questions_details['questions_number'] * 100),
+                'progress': int((questions_details['current_question'] + 1) / questions_details['questions_number'] * 100),
                 'title': questionare.title,
                 'form': form,
             }
